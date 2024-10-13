@@ -1,11 +1,11 @@
 import {
 	Alert,
 	Button,
-	Checkbox,
+	// Checkbox,
 	Divider,
 	FormControl,
-	FormControlLabel,
-	FormGroup,
+	// FormControlLabel,
+	// FormGroup,
 	IconButton,
 	InputAdornment,
 	InputLabel,
@@ -15,10 +15,14 @@ import '../../styles/Signin.scss'
 import { AlternateEmail, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const SigninForm = () => {
 	const [visible, setVisible] = useState(false)
 	const { register, handleSubmit, formState } = useForm()
+	const navigate = useNavigate()
 
 	const { errors } = formState
 
@@ -26,18 +30,35 @@ const SigninForm = () => {
 		setVisible((visiblePrev) => !visiblePrev)
 	}
 
-	const onSubmit = (data) => console.log(data)
+	const onSubmit = (data) => {
+		const { email, password } = data
+
+		axios
+			.post(`${import.meta.env.VITE_API_ENDPOINT}/auth/login`, { email, password })
+			.then((res) => {
+				if (res.status === 200) {
+					console.log(res)
+					navigate('/')
+					toast.success('Sign in successfully!')
+				}
+			})
+			.catch((err) => {
+				console.error(err)
+			})
+
+		// axios.post()
+	}
 
 	return (
 		<div className='signin'>
 			<div className='wrapper'>
 				<div className='image'>
-					<img src='/recruiment-agency.svg' alt='recruiment agency' />
+					<img src='/assets/images/recruiment-agency.svg' alt='recruiment agency' />
 				</div>
 				<div className='content'>
 					<div className='content-wrapper'>
 						<figure>
-							<img src='/logo.png' alt='logo recruiment' className='logo-image' />
+							<img src='/assets/icon/logo.png' alt='logo recruiment' className='logo-image' />
 						</figure>
 						<h2 className='heading'>Sign in</h2>
 						<p className='subtext'>Welcome to newhope-baito, please sign in to continue</p>
@@ -133,7 +154,7 @@ const SigninForm = () => {
 									// )}
 								)}
 							</FormControl>
-							<FormGroup style={{ marginTop: '10px' }}>
+							{/* <FormGroup style={{ marginTop: '10px' }}>
 								<FormControlLabel
 									control={<Checkbox />}
 									label='Remember me'
@@ -141,7 +162,7 @@ const SigninForm = () => {
 									id='remember'
 									{...register('remember')}
 								/>
-							</FormGroup>
+							</FormGroup> */}
 							<FormControl fullWidth style={{ marginTop: '20px' }}>
 								<Button
 									type='submit'
