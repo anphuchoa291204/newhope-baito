@@ -1,23 +1,23 @@
-import Grid from '@mui/material/Grid2'
-import { People, Radar, SensorOccupied } from '@mui/icons-material'
-import CardItem from './CardItem'
+import Grid from "@mui/material/Grid2"
+import { People, Radar, SensorOccupied } from "@mui/icons-material"
+import CardItem from "./CardItem"
 
 const cardDataDemo = [
 	{
-		title: 'Total Employees',
+		title: "Total Employees",
 		value: 100,
 		icon: <People />,
 		rate: 10,
 	},
 	{
-		title: 'Total Projects',
+		title: "Total Projects",
 		value: 100,
 		icon: <Radar />,
 		rate: 3.41,
 	},
 	{
-		title: 'Total Clients',
-		value: '$10,000',
+		title: "Total Clients",
+		value: "$10,000",
 		icon: <SensorOccupied />,
 		rate: 6.92,
 	},

@@ -1,4 +1,4 @@
-import SigninForm from '../features/Auth/SigninForm'
+import SigninForm from "../features/Auth/SigninForm"
 
 const Signin = () => {
 	return <SigninForm />
