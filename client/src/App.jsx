@@ -1,10 +1,12 @@
+import { useEffect } from "react"
+import { useAuth } from "./features/Auth/hooks/useAuth"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+
+import Signin from "./pages/Signin"
+import Signup from "./pages/Signup"
 import AppLayout from "./pages/AppLayout"
 import Dashboard from "./pages/Dashboard"
 import PageNotFound from "./pages/PageNotFound"
-import Signin from "./pages/Signin"
-import { useAuth } from "./hooks/useAuth"
-import { useEffect } from "react"
 
 const router = createBrowserRouter([
 	{
@@ -19,6 +21,10 @@ const router = createBrowserRouter([
 	{
 		path: "/signin",
 		element: <Signin />,
+	},
+	{
+		path: "/signup",
+		element: <Signup />,
 	},
 	{
 		path: "*",

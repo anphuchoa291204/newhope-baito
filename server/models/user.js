@@ -14,15 +14,11 @@ const userSchema = new Schema({
 	},
 	login_timestamp: {
 		type: Date,
-		default: () => new Date(),
+		default: null,
 	},
 	logout_timestamp: {
 		type: Date,
 		default: null,
-	},
-	ip_address: {
-		type: String,
-		default: "0.0.0.0",
 	},
 	session_id: {
 		type: String,
@@ -35,13 +31,9 @@ const userSchema = new Schema({
 	login_status: {
 		type: String,
 		enum: ["success", "failure"],
-		default: "failure",
+		default: "success",
 	},
 	auth_token: {
-		type: String,
-		default: null,
-	},
-	logout_reason: {
 		type: String,
 		default: null,
 	},
@@ -49,13 +41,13 @@ const userSchema = new Schema({
 		type: Number,
 		default: 0,
 	},
-	last_login: {
-		type: Date,
-		default: null,
-	},
 	is_active: {
 		type: Boolean,
 		default: true,
+	},
+	fail_login_timestamp: {
+		type: Date,
+		default: null,
 	},
 })
 

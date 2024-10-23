@@ -1,59 +1,58 @@
 import {
 	Alert,
 	Button,
-	// Checkbox,
 	Divider,
 	FormControl,
-	// FormControlLabel,
-	// FormGroup,
 	IconButton,
 	InputAdornment,
 	InputLabel,
 	OutlinedInput,
 } from "@mui/material"
+
 import "../../styles/Signin.scss"
-import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material"
+
+import toast from "react-hot-toast"
+
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import { login } from "../../services/authApi"
-import { useAuth } from "./hooks/useAuth"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
-const SigninForm = () => {
+const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material"
+import { signup } from "../../services/authApi"
+// import toast from "react-hot-toast"
+
+const SignupForm = () => {
 	const navigate = useNavigate()
-	const { login: loginAuth } = useAuth()
 
-	const [visible, setVisible] = useState(false)
-	const { register, handleSubmit, formState } = useForm()
+	const [visiblePwd, setVisiblePwd] = useState(false)
+	const [visibleConfirmPwd, setVisibleConfirmPwd] = useState(false)
+	const { register, handleSubmit, formState, getValues } = useForm()
 
-	const { errors } = formState
-
-	const handleVisibility = () => {
-		setVisible((visiblePrev) => !visiblePrev)
+	const handleVisibility = (field) => {
+		if (field === "password") setVisiblePwd((visiblePrev) => !visiblePrev)
+		else setVisibleConfirmPwd((visiblePrev) => !visiblePrev)
 	}
 
 	const onSubmit = async (data) => {
 		try {
 			const { email, password } = data
 			// Call the login function that interacts with the backend
-			const message = await login(email, password)
-
-			// If successful, log in to auth context and navigate
-			await loginAuth({ email })
+			const message = await signup(email, password)
 
 			// Show success message from the server
 			toast.success(message)
 
 			// Redirect to home page after successful login
-			navigate("/", { replace: true })
+			navigate("/signin")
 		} catch (error) {
 			// Display error message from the server or default message
-			toast.error(error?.message || "Sign in failed!")
+			toast.error(error?.message || "Sign up failed!")
 		}
 	}
 
+	const { errors } = formState
 	return (
 		<div className="signin">
 			<div className="wrapper">
@@ -65,8 +64,8 @@ const SigninForm = () => {
 						<figure>
 							<img src="/assets/icon/logo.png" alt="logo recruiment" className="logo-image" />
 						</figure>
-						<h2 className="heading">Sign in</h2>
-						<p className="subtext">Welcome to newhope-baito, please sign in to continue</p>
+						<h2 className="heading">Create your account</h2>
+						<p className="subtext">Welcome to newhope-baito, please sign up to continue</p>
 						<Button
 							type="button"
 							variant="contained"
@@ -82,7 +81,9 @@ const SigninForm = () => {
 							<img src="/google-icon-logo.svg" alt="google icon" className="google-icon" />
 							Sign In with Google
 						</Button>
+
 						<Divider style={{ margin: "10px 0" }}>Or</Divider>
+
 						<form
 							noValidate
 							autoComplete={"off"}
@@ -125,18 +126,22 @@ const SigninForm = () => {
 									// )}
 								)}
 							</FormControl>
-							<FormControl fullWidth>
+
+							<FormControl fullWidth style={{ marginBottom: "15px" }}>
 								<InputLabel htmlFor="password" error={errors?.password ? true : false}>
 									Password
 								</InputLabel>
 								<OutlinedInput
 									style={{ borderRadius: "10px" }}
 									id="password"
-									type={visible ? "text" : "password"}
+									type={visiblePwd ? "text" : "password"}
 									endAdornment={
 										<InputAdornment position="end">
-											<IconButton style={{ margin: 0 }} onClick={handleVisibility}>
-												{visible ? (
+											<IconButton
+												style={{ margin: 0 }}
+												onClick={() => handleVisibility("password")}
+											>
+												{visiblePwd ? (
 													<VisibilityOff fontSize="medium" />
 												) : (
 													<Visibility fontSize="medium" />
@@ -148,7 +153,14 @@ const SigninForm = () => {
 									name="password"
 									fullWidth
 									error={errors?.password ? true : false}
-									{...register("password", { required: "Please input your password!" })}
+									{...register("password", {
+										required: "Please input your password!",
+										pattern: {
+											value: PASSWORD_REGEX,
+											message:
+												"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character!",
+										},
+									})}
 								/>
 								{errors?.password && (
 									<Alert style={{ marginTop: "10px" }} severity="error">
@@ -159,15 +171,52 @@ const SigninForm = () => {
 									// )}
 								)}
 							</FormControl>
-							{/* <FormGroup style={{ marginTop: '10px' }}>
-								<FormControlLabel
-									control={<Checkbox />}
-									label='Remember me'
-									name='remember'
-									id='remember'
-									{...register('remember')}
+
+							<FormControl fullWidth>
+								<InputLabel
+									htmlFor="confirmPassword"
+									error={errors?.confirmPassword ? true : false}
+								>
+									Confirm Password
+								</InputLabel>
+								<OutlinedInput
+									style={{ borderRadius: "10px" }}
+									id="confirmPassword"
+									type={visibleConfirmPwd ? "text" : "password"}
+									endAdornment={
+										<InputAdornment position="end">
+											<IconButton
+												style={{ margin: 0 }}
+												onClick={() => handleVisibility("confirmPassword")}
+											>
+												{visibleConfirmPwd ? (
+													<VisibilityOff fontSize="medium" />
+												) : (
+													<Visibility fontSize="medium" />
+												)}
+											</IconButton>
+										</InputAdornment>
+									}
+									label="Confirm Password"
+									name="confirmPassword"
+									fullWidth
+									error={errors?.password ? true : false}
+									{...register("confirmPassword", {
+										required: "Please input your password!",
+										validate: (value) =>
+											value === getValues().password || "Passwords need to match!",
+									})}
 								/>
-							</FormGroup> */}
+								{errors?.confirmPassword && (
+									<Alert style={{ marginTop: "10px" }} severity="error">
+										{errors?.confirmPassword?.message}
+									</Alert>
+									// {errors?.confirmPassword && (
+									// 	<p style={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.password?.message}</p>
+									// )}
+								)}
+							</FormControl>
+
 							<FormControl fullWidth style={{ marginTop: "20px" }}>
 								<Button
 									type="submit"
@@ -180,12 +229,12 @@ const SigninForm = () => {
 										textTransform: "none",
 									}}
 								>
-									Sign In
+									Create Account
 								</Button>
 							</FormControl>
 						</form>
 						<p className="subtext" style={{ marginTop: "10px" }}>
-							Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+							Already have an account? <Link to="/signin">Sign in</Link>
 						</p>
 					</div>
 				</div>
@@ -194,4 +243,4 @@ const SigninForm = () => {
 	)
 }
 
-export default SigninForm
+export default SignupForm

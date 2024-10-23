@@ -78,11 +78,18 @@
 
 // module.exports = router
 
-import express from 'express'
-import login from '../controller/auth.controller.js'
+import express from "express"
+import { login, logout, signup } from "../controller/auth.controller.js"
 
 const router = express.Router()
 
-router.post('/login', login)
+// Login route
+router.post("/login", login)
+
+// Logout route
+router.post("/logout", logout)
+
+// Signup route
+router.post("/signup", signup)
 
 export default router

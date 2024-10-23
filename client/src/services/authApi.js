@@ -8,11 +8,6 @@ const login = async (email, password) => {
 			password,
 		})
 
-		// If the response status is not 200, handle the error accordingly
-		if (response.status !== 200) {
-			throw new Error("Login failed")
-		}
-
 		// If the response is successful, return the response data
 		return response.data.message
 	} catch (error) {
@@ -28,4 +23,38 @@ const login = async (email, password) => {
 	}
 }
 
-export { login }
+const logout = async ({ email }) => {
+	try {
+		const response = await axios.post(`${MAIN_API}/auth/logout`, {
+			email,
+		})
+
+		// If the response is successful, return the response data
+		return response.data.message
+	} catch (error) {
+		// Check for specific status codes returned by the backend
+		if (error.response && error.response.status === 401) {
+			throw new Error(error.response?.data?.message || "User not found")
+		}
+
+		// If it's a different error, throw a generic error message
+		throw new Error(error.response?.data?.message || "Failed to logout")
+	}
+}
+
+const signup = async (email, password) => {
+	try {
+		const response = await axios.post(`${MAIN_API}/auth/signup`, {
+			email,
+			password,
+		})
+
+		// If the response is successful, return the response data
+		return response.data.message
+	} catch (error) {
+		// If it's a different error, throw a generic error message
+		throw new Error(error.response?.data?.message || "Failed to signup")
+	}
+}
+
+export { login, logout, signup }
