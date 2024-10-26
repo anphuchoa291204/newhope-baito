@@ -9,7 +9,7 @@ import {
 	OutlinedInput,
 } from "@mui/material"
 
-import "../../styles/Signin.scss"
+import "../../styles/Signup.scss"
 
 import toast from "react-hot-toast"
 
@@ -54,11 +54,8 @@ const SignupForm = () => {
 
 	const { errors } = formState
 	return (
-		<div className="signin">
+		<div className="signup">
 			<div className="wrapper">
-				<div className="image">
-					<img src="/assets/images/recruiment-agency.svg" alt="recruiment agency" />
-				</div>
 				<div className="content">
 					<div className="content-wrapper">
 						<figure>
@@ -84,12 +81,7 @@ const SignupForm = () => {
 
 						<Divider style={{ margin: "10px 0" }}>Or</Divider>
 
-						<form
-							noValidate
-							autoComplete={"off"}
-							className="form"
-							onSubmit={handleSubmit(onSubmit)}
-						>
+						<form noValidate autoComplete="off" className="form" onSubmit={handleSubmit(onSubmit)}>
 							<FormControl fullWidth style={{ marginBottom: "15px" }}>
 								<InputLabel htmlFor="email" error={errors?.email ? true : false}>
 									Email Address
@@ -121,10 +113,10 @@ const SignupForm = () => {
 									<Alert style={{ marginTop: "10px" }} severity="error">
 										{errors?.email?.message}
 									</Alert>
-									// {errors?.email && (
-									// 	<p style={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.email?.message}</p>
-									// )}
 								)}
+								{/* {errors?.email && (
+									<p style={{ marginTop: "5px", color: "#D32F2F" }}>{errors?.email?.message}</p>
+								)} */}
 							</FormControl>
 
 							<FormControl fullWidth style={{ marginBottom: "15px" }}>
@@ -152,13 +144,14 @@ const SignupForm = () => {
 									label="Password"
 									name="password"
 									fullWidth
+									autoComplete="new-password"
 									error={errors?.password ? true : false}
 									{...register("password", {
 										required: "Please input your password!",
 										pattern: {
 											value: PASSWORD_REGEX,
 											message:
-												"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character!",
+												"Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character!",
 										},
 									})}
 								/>
@@ -166,10 +159,10 @@ const SignupForm = () => {
 									<Alert style={{ marginTop: "10px" }} severity="error">
 										{errors?.password?.message}
 									</Alert>
-									// {errors?.password && (
-									// 	<p style={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.password?.message}</p>
-									// )}
 								)}
+								{/* {errors?.password && (
+									<p style={{ marginTop: "5px", color: "#D32F2F" }}>{errors?.password?.message}</p>
+								)} */}
 							</FormControl>
 
 							<FormControl fullWidth>
@@ -199,6 +192,7 @@ const SignupForm = () => {
 									}
 									label="Confirm Password"
 									name="confirmPassword"
+									autoComplete="new-password"
 									fullWidth
 									error={errors?.password ? true : false}
 									{...register("confirmPassword", {
@@ -211,10 +205,12 @@ const SignupForm = () => {
 									<Alert style={{ marginTop: "10px" }} severity="error">
 										{errors?.confirmPassword?.message}
 									</Alert>
-									// {errors?.confirmPassword && (
-									// 	<p style={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.password?.message}</p>
-									// )}
 								)}
+								{/* {errors?.confirmPassword && (
+									<p style={{ marginTop: "5px", color: "#D32F2F" }}>
+										{errors?.confirmPassword?.message}
+									</p>
+								)} */}
 							</FormControl>
 
 							<FormControl fullWidth style={{ marginTop: "20px" }}>
@@ -237,6 +233,10 @@ const SignupForm = () => {
 							Already have an account? <Link to="/signin">Sign in</Link>
 						</p>
 					</div>
+				</div>
+
+				<div className="image">
+					<img src="/assets/images/resumes-desk.jpg" alt="recruiment agency" />
 				</div>
 			</div>
 		</div>

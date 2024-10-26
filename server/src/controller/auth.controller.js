@@ -10,37 +10,43 @@ const login = async (req, res) => {
 		// Find the user by email
 		const user = await User.findOne({ email })
 
-		if (user && user.password === password && user.is_active) {
-			// Update the login_timestamp and user_agent
-			user.login_timestamp = formatDate(new Date())
-			user.user_agent = req.headers["user-agent"] // Get the user agent from headers
+		if (user && user.is_active) {
+			// Compare the provided password with the hashed password stored in the database
+			const passwordMatch = await bcrypt.compare(password, user.password)
 
-			user.session_id = sessionId // Set the session_id
+			if (passwordMatch) {
+				// Update the login_timestamp and user_agent
+				user.login_timestamp = formatDate(new Date())
+				user.user_agent = req.headers["user-agent"] // Get the user agent from headers
 
-			user.login_status = "success" // Set the login_status to true
-			user.failed_attempts = 0 // Reset the failed_attempts counter
+				user.session_id = sessionId // Set the session_id
 
-			await user.save() // Save the updated user document
+				user.login_status = "success" // Set the login_status to true
+				user.failed_attempts = 0 // Reset the failed_attempts counter
 
-			// Store user ID in the session
-			req.session.userId = user._id
+				await user.save() // Save the updated user document
 
-			res.status(200).json({ message: "Login successful" })
+				// Store user ID in the session
+				req.session.userId = user._id
+
+				res.status(200).json({ message: "Login successful" })
+			} else {
+				// if (user.failed_attempts >= 3) {
+				// 	user.is_active = false // Lock the account if the failed_attempts counter reaches 3
+				// 	return res.status(401).json({ message: "Account locked. Please reset your password" })
+				// }
+
+				user.failed_attempts += 1 // Increment the failed_attempts counter
+				user.login_status = "failure" // Set the login_status to false
+				user.fail_login_timestamp = formatDate(new Date())
+				await user.save() // Save the updated user document
+
+				res.status(401).json({ message: "Invalid email or password" })
+			}
 		} else {
-			// if (user.failed_attempts >= 3) {
-			// 	user.is_active = false // Lock the account if the failed_attempts counter reaches 3
-			// 	return res.status(401).json({ message: "Account locked. Please reset your password" })
-			// }
-
-			user.failed_attempts += 1 // Increment the failed_attempts counter
-			user.login_status = "failure" // Set the login_status to false
-			user.fail_login_timestamp = formatDate(new Date())
-			await user.save() // Save the updated user document
-
 			res.status(401).json({ message: "Invalid email or password" })
 		}
 	} catch (err) {
-		console.error("Error during login:", err)
 		res.status(500).json({ error: "An error occurred during login", details: err })
 	}
 }
@@ -67,7 +73,6 @@ const logout = async (req, res) => {
 		// Send successful logout response
 		res.status(200).json({ message: "Logout successful" })
 	} catch (error) {
-		console.error("Logout error:", error)
 		res.status(500).json({ message: "Internal server error" })
 	}
 }
@@ -98,8 +103,6 @@ const signup = async (req, res) => {
 
 		res.status(201).json({ message: "User created successfully" })
 	} catch (error) {
-		console.error("Register error:", error)
-
 		// Handle MongoDB validation error for unique constraint
 		if (error.code === 11000) {
 			return res.status(409).json({ message: "Email already exists" })

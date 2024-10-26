@@ -58,7 +58,7 @@ const SigninForm = () => {
 		<div className="signin">
 			<div className="wrapper">
 				<div className="image">
-					<img src="/assets/images/recruiment-agency.svg" alt="recruiment agency" />
+					<img src="/assets/images/isometric-recruit-01.png" alt="recruiment agency" />
 				</div>
 				<div className="content">
 					<div className="content-wrapper">
@@ -83,12 +83,7 @@ const SigninForm = () => {
 							Sign In with Google
 						</Button>
 						<Divider style={{ margin: "10px 0" }}>Or</Divider>
-						<form
-							noValidate
-							autoComplete={"off"}
-							className="form"
-							onSubmit={handleSubmit(onSubmit)}
-						>
+						<form noValidate autoComplete="off" className="form" onSubmit={handleSubmit(onSubmit)}>
 							<FormControl fullWidth style={{ marginBottom: "15px" }}>
 								<InputLabel htmlFor="email" error={errors?.email ? true : false}>
 									Email Address
@@ -146,6 +141,7 @@ const SigninForm = () => {
 									}
 									label="Password"
 									name="password"
+									autoComplete="new-password"
 									fullWidth
 									error={errors?.password ? true : false}
 									{...register("password", { required: "Please input your password!" })}

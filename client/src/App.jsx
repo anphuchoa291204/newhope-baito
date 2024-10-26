@@ -7,6 +7,7 @@ import Signup from "./pages/Signup"
 import AppLayout from "./pages/AppLayout"
 import Dashboard from "./pages/Dashboard"
 import PageNotFound from "./pages/PageNotFound"
+import Test from "./pages/Test"
 
 const router = createBrowserRouter([
 	{
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Dashboard />,
+			},
+			{
+				path: "/test",
+				element: <Test />,
 			},
 		],
 	},

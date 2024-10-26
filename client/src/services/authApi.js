@@ -11,8 +11,6 @@ const login = async (email, password) => {
 		// If the response is successful, return the response data
 		return response.data.message
 	} catch (error) {
-		console.log(error)
-
 		// Check for specific status codes returned by the backend
 		if (error.response && error.response.status === 401) {
 			throw new Error(error.response?.data?.message || "Invalid email or password")

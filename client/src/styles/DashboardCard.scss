@@ -1,0 +1,39 @@
+.card-dashboard-item-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+
+	.icon {
+		padding: 10px;
+		border-radius: 10px;
+		background: #1976d214;
+		color: #1565c0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.data {
+		text-align: right;
+		.data-subhead {
+			color: #8fa6b6;
+			font-weight: 500;
+		}
+
+		.data-subtext {
+			font-size: 24px;
+			font-weight: bold;
+		}
+	}
+}
+
+.card-dashboard-rate {
+	margin-top: 5px;
+	display: flex;
+	align-items: center;
+	color: #29cc93;
+	gap: 5px;
+	font-weight: 600;
+}
