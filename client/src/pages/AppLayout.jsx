@@ -129,15 +129,15 @@ function AppLayout() {
 
 	const authentication = useMemo(() => {
 		return {
-			// signIn: () => {
-			// 	setSession({
-			// 		user: {
-			// 			name: "Phuc Hoa",
-			// 			email: userData?.email,
-			// 			image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
-			// 		},
-			// 	})
-			// },
+			signIn: () => {
+				setSession({
+					user: {
+						name: "Phuc Hoa",
+						email: userData?.email,
+						image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
+					},
+				})
+			},
 			signOut: async () => {
 				setSession(null)
 				try {

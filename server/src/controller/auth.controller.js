@@ -1,3 +1,4 @@
+import Profile from "../../models/profile.js"
 import User from "../../models/user.js"
 import { formatDate } from "../../utils/helpers.js"
 import bcrypt from "bcrypt"
@@ -27,7 +28,7 @@ const login = async (req, res) => {
 				await user.save() // Save the updated user document
 
 				// Store user ID in the session
-				req.session.userId = user._id
+				// req.session.userId = user._id
 
 				res.status(200).json({ message: "Login successful" })
 			} else {
@@ -47,6 +48,8 @@ const login = async (req, res) => {
 			res.status(401).json({ message: "Invalid email or password" })
 		}
 	} catch (err) {
+		console.log(err)
+
 		res.status(500).json({ error: "An error occurred during login", details: err })
 	}
 }
@@ -78,7 +81,9 @@ const logout = async (req, res) => {
 }
 
 const signup = async (req, res) => {
-	const { email, password } = req.body
+	const { email, password, userProfile } = req.body
+
+	console.log(userProfile)
 
 	// Basic input validation
 	if (!email || !password) {
@@ -96,14 +101,28 @@ const signup = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, 10)
 
 		// Create the user with the hashed password
-		await User.create({
+		const user = await User.create({
 			email,
 			password: hashedPassword,
+		})
+
+		// Create the profile with all required fields
+		await Profile.create({
+			user_id: user._id,
+			fullname: userProfile.fullname,
+			date_of_birth: userProfile.dateofbirth,
+			gender: userProfile.gender,
+			phone_number: userProfile.phonenumber,
+			nationality: userProfile.nationality,
+			major: userProfile.major,
+			japan_skill: userProfile.japanSkill,
+			other_language: userProfile.otherLang ?? "",
 		})
 
 		res.status(201).json({ message: "User created successfully" })
 	} catch (error) {
 		// Handle MongoDB validation error for unique constraint
+
 		if (error.code === 11000) {
 			return res.status(409).json({ message: "Email already exists" })
 		}

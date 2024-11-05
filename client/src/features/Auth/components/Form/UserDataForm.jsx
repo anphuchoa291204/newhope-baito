@@ -1,15 +1,15 @@
 import {
-	Alert,
-	Autocomplete,
 	Box,
-	Button,
-	FormControl,
-	FormControlLabel,
+	Alert,
 	Radio,
-	RadioGroup,
 	Stack,
+	Button,
 	TextField,
 	Typography,
+	RadioGroup,
+	FormControl,
+	Autocomplete,
+	FormControlLabel,
 } from "@mui/material"
 
 import dayjs from "dayjs"
@@ -17,10 +17,10 @@ import { useNavigate } from "react-router-dom"
 import { DatePicker } from "@mui/x-date-pickers"
 import { useForm, Controller } from "react-hook-form"
 
-import { countries } from "../../data/countrydata"
 import { majors } from "../../data/majordata"
+import { countries } from "../../data/countrydata"
 
-const UserDataForm = ({ setPage }) => {
+const UserDataForm = ({ setPage, setUserProfile }) => {
 	const navigate = useNavigate()
 	const { formState, reset, handleSubmit, register, control } = useForm({
 		defaultValues: {
@@ -44,6 +44,8 @@ const UserDataForm = ({ setPage }) => {
 
 	const onSubmit = (data) => {
 		console.log(data)
+		setPage("signup")
+		setUserProfile(data)
 	}
 
 	// NOTE: This one use to change page when all data is valid
@@ -122,27 +124,15 @@ const UserDataForm = ({ setPage }) => {
 						<RadioGroup row aria-labelledby="gender-label">
 							<FormControlLabel
 								{...register("gender", { required: "Please select your gender!" })}
-								value="optional"
-								control={<Radio />}
-								label="Optional"
-							/>
-							<FormControlLabel
-								{...register("gender", { required: "Please select your gender!" })}
-								value="female"
-								control={<Radio />}
-								label="Female"
-							/>
-							<FormControlLabel
-								{...register("gender", { required: "Please select your gender!" })}
 								value="male"
 								control={<Radio />}
 								label="Male"
 							/>
 							<FormControlLabel
 								{...register("gender", { required: "Please select your gender!" })}
-								value="other"
+								value="female"
 								control={<Radio />}
-								label="Other"
+								label="Female"
 							/>
 						</RadioGroup>
 					</FormControl>
@@ -265,14 +255,6 @@ const UserDataForm = ({ setPage }) => {
 							/>
 						)}
 					/>
-					{/* <TextField
-						type="tel"
-						placeholder="Major"
-						{...register("major", {
-							required: "Please input your major!",
-						})}
-						fullWidth
-					/> */}
 					{errors?.major && (
 						<Alert sx={{ marginTop: "10px" }} severity="error">
 							{errors?.major?.message}
@@ -283,20 +265,12 @@ const UserDataForm = ({ setPage }) => {
 				{/* ==== Japanese Skill Level ==== */}
 				<Box>
 					<Typography variant="h6">Japanese Skill Level</Typography>
-					{/* <TextField
-						type="tel"
-						placeholder="Japanese Skill Level"
-						{...register("japanSkill", {
-							required: "Please select your Japan skill level!",
-						})}
-						fullWidth
-					/> */}
 					<RadioGroup row aria-labelledby="jp-skill-label">
 						<FormControlLabel
 							{...register("japanSkill", {
 								required: "Please select your Japan skill level!",
 							})}
-							value="n5"
+							value="N5"
 							control={<Radio />}
 							label="N5"
 						/>
@@ -304,7 +278,7 @@ const UserDataForm = ({ setPage }) => {
 							{...register("japanSkill", {
 								required: "Please select your Japan skill level!",
 							})}
-							value="n4"
+							value="N4"
 							control={<Radio />}
 							label="N4"
 						/>
@@ -312,7 +286,7 @@ const UserDataForm = ({ setPage }) => {
 							{...register("japanSkill", {
 								required: "Please select your Japan skill level!",
 							})}
-							value="n3"
+							value="N3"
 							control={<Radio />}
 							label="N3"
 						/>
@@ -320,7 +294,7 @@ const UserDataForm = ({ setPage }) => {
 							{...register("japanSkill", {
 								required: "Please select your Japan skill level!",
 							})}
-							value="n2"
+							value="N2"
 							control={<Radio />}
 							label="N2"
 						/>
@@ -328,7 +302,7 @@ const UserDataForm = ({ setPage }) => {
 							{...register("japanSkill", {
 								required: "Please select your Japan skill level!",
 							})}
-							value="n1"
+							value="N1"
 							control={<Radio />}
 							label="N1"
 						/>
@@ -342,18 +316,13 @@ const UserDataForm = ({ setPage }) => {
 
 				{/* ==== OTHER LANGUAGES ==== */}
 				<Box>
-					<Typography variant="h6">Other languages (OPTIONAL)</Typography>
+					<Typography variant="h6">Other languages (optional)</Typography>
 					<TextField
 						type="tel"
-						placeholder="Other languages (OPTIONAL)"
+						placeholder="Other languages (optional)"
 						{...register("otherLang")}
 						fullWidth
 					/>
-					{/* {errors?.japanSkill && (
-						<Alert sx={{ marginTop: "10px" }} severity="error">
-							{errors?.japanSkill?.message}
-						</Alert>
-					)} */}
 				</Box>
 			</Stack>
 

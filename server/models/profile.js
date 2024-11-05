@@ -18,7 +18,7 @@ const profileSchema = new Schema({
 	},
 	gender: {
 		type: String,
-		enum: ["optional", "male", "female", "other"],
+		enum: ["male", "female"],
 		required: [true, "Gender is required"],
 	},
 	phone_number: {
@@ -30,7 +30,7 @@ const profileSchema = new Schema({
 		required: [true, "Nationality is required"],
 	},
 	major: {
-		type: Date,
+		type: String,
 		required: [true, "Major is required"],
 	},
 	japan_skill: {
@@ -40,7 +40,7 @@ const profileSchema = new Schema({
 	},
 	other_language: {
 		type: String,
-		default: null,
+		default: "",
 	},
 })
 

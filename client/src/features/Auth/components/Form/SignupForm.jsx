@@ -18,12 +18,14 @@ import { Link, useNavigate } from "react-router-dom"
 
 const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
-const SignupForm = () => {
+const SignupForm = ({ userProfile }) => {
 	const navigate = useNavigate()
 
 	const [visiblePwd, setVisiblePwd] = useState(false)
 	const [visibleConfirmPwd, setVisibleConfirmPwd] = useState(false)
 	const { register, handleSubmit, formState, getValues } = useForm()
+
+	console.log(userProfile)
 
 	const { errors } = formState
 
@@ -36,7 +38,7 @@ const SignupForm = () => {
 		try {
 			const { email, password } = data
 			// Call the login function that interacts with the backend
-			const message = await signup(email, password)
+			const message = await signup(email, password, userProfile)
 
 			// Show success message from the server
 			toast.success(message)

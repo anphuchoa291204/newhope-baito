@@ -9,6 +9,17 @@ import UserDataForm from "./components/Form/UserDataForm"
 const SignupScreen = () => {
 	const [page, setPage] = useState("userdata") // "userdata" || "signup"
 
+	const [userProfile, setUserProfile] = useState({
+		fullname: "",
+		dateofbirth: null,
+		gender: "",
+		phonenumber: "",
+		nationality: "",
+		major: "",
+		japanSkill: "",
+		otherLang: "",
+	})
+
 	return (
 		<div className="signup">
 			<div className="wrapper">
@@ -38,8 +49,10 @@ const SignupScreen = () => {
 						<Divider sx={{ my: 2 }}>Or</Divider>
 
 						{/* ==== FORM ==== */}
-						{page === "userdata" && <UserDataForm setPage={setPage} />}
-						{page === "signup" && <SignupForm />}
+						{page === "userdata" && (
+							<UserDataForm setPage={setPage} setUserProfile={setUserProfile} />
+						)}
+						{page === "signup" && <SignupForm userProfile={userProfile} />}
 					</div>
 				</div>
 

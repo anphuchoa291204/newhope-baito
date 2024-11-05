@@ -40,11 +40,12 @@ const logout = async ({ email }) => {
 	}
 }
 
-const signup = async (email, password) => {
+const signup = async (email, password, userProfile) => {
 	try {
 		const response = await axios.post(`${MAIN_API}/auth/signup`, {
 			email,
 			password,
+			userProfile,
 		})
 
 		// If the response is successful, return the response data
