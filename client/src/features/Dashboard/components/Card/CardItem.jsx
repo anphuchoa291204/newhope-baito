@@ -1,6 +1,6 @@
 import { Card, Divider, Typography } from "@mui/material"
 import { TrendingUp } from "@mui/icons-material"
-import "../../../../styles/DashboardCard.scss"
+import "@/styles/DashboardCard.scss"
 
 const CardItem = ({ title, value, icon, rate }) => {
 	return (

@@ -1,13 +1,13 @@
 import { useEffect } from "react"
-import { useAuth } from "./features/Auth/hooks/useAuth"
+import { useAuth } from "@/features/Auth/hooks/useAuth"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
-import Signin from "./pages/Signin"
-import Signup from "./pages/Signup"
-import AppLayout from "./pages/AppLayout"
-import Dashboard from "./pages/Dashboard"
-import PageNotFound from "./pages/PageNotFound"
-import Test from "./pages/Test"
+import Signin from "@/pages/Signin"
+import Signup from "@/pages/Signup"
+import AppLayout from "@/pages/AppLayout"
+import Dashboard from "@/pages/Dashboard"
+import PageNotFound from "@/pages/PageNotFound"
+import Test from "@/pages/Test"
 
 const router = createBrowserRouter([
 	{

@@ -1,6 +1,7 @@
+import CardItem from "./CardItem"
+
 import Grid from "@mui/material/Grid2"
 import { People, Radar, SensorOccupied } from "@mui/icons-material"
-import CardItem from "./CardItem"
 
 const cardDataDemo = [
 	{
