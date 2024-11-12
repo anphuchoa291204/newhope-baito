@@ -5,12 +5,17 @@ const { Schema, models, model } = mongoose
 const userSchema = new Schema({
 	email: {
 		type: String,
-		unique: [true, "Email already exists"],
+		unique: true,
 		required: [true, "Email is required"],
 	},
 	password: {
 		type: String,
 		required: [true, "Password is required"],
+	},
+	role: {
+		type: String,
+		enum: ["admin", "student"],
+		default: "student",
 	},
 	login_timestamp: {
 		type: Date,

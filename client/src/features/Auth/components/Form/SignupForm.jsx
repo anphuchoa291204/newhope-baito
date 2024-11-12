@@ -6,6 +6,7 @@ import {
 	InputAdornment,
 	InputLabel,
 	OutlinedInput,
+	Stack,
 } from "@mui/material"
 import { AlternateEmail, Visibility, VisibilityOff } from "@mui/icons-material"
 
@@ -18,20 +19,22 @@ import { Link, useNavigate } from "react-router-dom"
 
 const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
-const SignupForm = ({ userProfile }) => {
+const SignupForm = ({ setPage, userProfile, setUserProfile }) => {
 	const navigate = useNavigate()
 
 	const [visiblePwd, setVisiblePwd] = useState(false)
 	const [visibleConfirmPwd, setVisibleConfirmPwd] = useState(false)
 	const { register, handleSubmit, formState, getValues } = useForm()
 
-	console.log(userProfile)
-
 	const { errors } = formState
 
 	const handleVisibility = (field) => {
 		if (field === "password") setVisiblePwd((visiblePrev) => !visiblePrev)
 		else setVisibleConfirmPwd((visiblePrev) => !visiblePrev)
+	}
+
+	const handleBackToProfile = () => {
+		setPage("userdata")
 	}
 
 	const onSubmit = async (data) => {
@@ -42,6 +45,17 @@ const SignupForm = ({ userProfile }) => {
 
 			// Show success message from the server
 			toast.success(message)
+
+			setUserProfile({
+				fullname: "",
+				dateofbirth: null,
+				gender: "",
+				phonenumber: "",
+				nationality: "",
+				major: "",
+				japanSkill: "",
+				otherLang: "",
+			})
 
 			// Redirect to home page after successful login
 			navigate("/signin")
@@ -54,6 +68,7 @@ const SignupForm = ({ userProfile }) => {
 	return (
 		<>
 			<form noValidate autoComplete="off" className="form" onSubmit={handleSubmit(onSubmit)}>
+				{/* ==== EMAIL ==== */}
 				<FormControl fullWidth sx={{ marginBottom: "15px" }}>
 					<InputLabel htmlFor="email" error={errors?.email ? true : false}>
 						Email Address
@@ -85,11 +100,9 @@ const SignupForm = ({ userProfile }) => {
 							{errors?.email?.message}
 						</Alert>
 					)}
-					{/* {errors?.email && (
-	          <p style={{ marginTop: "5px", color: "#D32F2F" }}>{errors?.email?.message}</p>
-	        )} */}
 				</FormControl>
 
+				{/* ==== PASSWORD ==== */}
 				<FormControl fullWidth sx={{ marginBottom: "15px" }}>
 					<InputLabel htmlFor="password" error={errors?.password ? true : false}>
 						Password
@@ -127,11 +140,9 @@ const SignupForm = ({ userProfile }) => {
 							{errors?.password?.message}
 						</Alert>
 					)}
-					{/* {errors?.password && (
-	          <p style={{ marginTop: "5px", color: "#D32F2F" }}>{errors?.password?.message}</p>
-	        )} */}
 				</FormControl>
 
+				{/* ==== CONFIRM PASSWORD ==== */}
 				<FormControl fullWidth>
 					<InputLabel htmlFor="confirmPassword" error={errors?.confirmPassword ? true : false}>
 						Confirm Password
@@ -165,26 +176,28 @@ const SignupForm = ({ userProfile }) => {
 							{errors?.confirmPassword?.message}
 						</Alert>
 					)}
-					{/* {errors?.confirmPassword && (
-	          <p style={{ marginTop: "5px", color: "#D32F2F" }}>
-	            {errors?.confirmPassword?.message}
-	          </p>
-	        )} */}
 				</FormControl>
 
+				{/* ==== CREATE ACCOUNT BUTTON ==== */}
 				<FormControl fullWidth sx={{ marginTop: "20px" }}>
-					<Button
-						type="submit"
-						variant="contained"
-						size="large"
-						sx={{
-							padding: "10px 20px",
-							fontWeight: "bold",
-							textTransform: "none",
-						}}
-					>
-						Create Account
-					</Button>
+					<Stack direction={"row"} spacing={2}>
+						<Button type="button" variant="outlined" fullWidth onClick={handleBackToProfile}>
+							Back to profile
+						</Button>
+						<Button
+							type="submit"
+							variant="contained"
+							size="large"
+							fullWidth
+							sx={{
+								padding: "10px 20px",
+								fontWeight: "bold",
+								textTransform: "none",
+							}}
+						>
+							Create Account
+						</Button>
+					</Stack>
 				</FormControl>
 			</form>
 

@@ -1,11 +1,11 @@
-import Profile from "../../models/profile.js"
-import User from "../../models/user.js"
-import { formatDate } from "../../utils/helpers.js"
 import bcrypt from "bcrypt"
+import User from "../../models/user.js"
+import Profile from "../../models/profile.js"
+import { formatDate } from "../../utils/helpers.js"
 
 const login = async (req, res) => {
 	const { email, password } = req.body
-	const sessionId = req.sessionID // Get the session ID
+	const sessionId = req.sessionID
 
 	try {
 		// Find the user by email
@@ -16,41 +16,44 @@ const login = async (req, res) => {
 			const passwordMatch = await bcrypt.compare(password, user.password)
 
 			if (passwordMatch) {
-				// Update the login_timestamp and user_agent
+				user.failed_attempts = 0
+				user.session_id = sessionId
+				user.login_status = "success"
+				user.user_agent = req.headers["user-agent"]
 				user.login_timestamp = formatDate(new Date())
-				user.user_agent = req.headers["user-agent"] // Get the user agent from headers
 
-				user.session_id = sessionId // Set the session_id
-
-				user.login_status = "success" // Set the login_status to true
-				user.failed_attempts = 0 // Reset the failed_attempts counter
-
-				await user.save() // Save the updated user document
+				await user.save()
 
 				// Store user ID in the session
 				// req.session.userId = user._id
 
-				res.status(200).json({ message: "Login successful" })
+				res.status(200).json({
+					status: "success",
+					message: "Login successful",
+					data: {
+						role: user.role,
+						email: user.email,
+					},
+				})
 			} else {
 				// if (user.failed_attempts >= 3) {
 				// 	user.is_active = false // Lock the account if the failed_attempts counter reaches 3
 				// 	return res.status(401).json({ message: "Account locked. Please reset your password" })
 				// }
 
-				user.failed_attempts += 1 // Increment the failed_attempts counter
-				user.login_status = "failure" // Set the login_status to false
+				user.failed_attempts += 1
+				user.login_status = "failure"
 				user.fail_login_timestamp = formatDate(new Date())
-				await user.save() // Save the updated user document
 
-				res.status(401).json({ message: "Invalid email or password" })
+				await user.save()
+
+				res.status(401).json({ status: "fail", message: "Invalid email or password" })
 			}
 		} else {
-			res.status(401).json({ message: "Invalid email or password" })
+			res.status(401).json({ status: "fail", message: "Invalid email or password" })
 		}
-	} catch (err) {
-		console.log(err)
-
-		res.status(500).json({ error: "An error occurred during login", details: err })
+	} catch (error) {
+		res.status(500).json({ status: "fail", message: "An error occurred during login", error })
 	}
 }
 
@@ -63,44 +66,42 @@ const logout = async (req, res) => {
 		const user = await User.findOne({ email })
 
 		if (!user) {
-			return res.status(404).json({ message: "User not found" })
+			return res.status(404).json({ status: "fail", message: "User not found" })
 		}
 
 		// Update the user's status and clear the auth_token
-		user.auth_token = null // Invalidate the auth token
+		user.auth_token = null
+		user.session_id = null
 		user.logout_timestamp = formatDate(new Date())
-		user.session_id = null // Clear the session ID
 
-		await user.save() // Save the updated user document
+		await user.save()
 
-		// Send successful logout response
-		res.status(200).json({ message: "Logout successful" })
+		res.status(200).json({
+			status: "success",
+			message: "Logout successful",
+		})
 	} catch (error) {
-		res.status(500).json({ message: "Internal server error" })
+		res.status(500).json({ status: "fail", message: "Internal server error" })
 	}
 }
 
 const signup = async (req, res) => {
 	const { email, password, userProfile } = req.body
 
-	console.log(userProfile)
-
-	// Basic input validation
 	if (!email || !password) {
-		return res.status(400).json({ message: "Email and password are required" })
+		return res.status(400).json({ status: "fail", message: "Email and password are required" })
 	}
 
 	try {
 		// Check if the email is already in use
 		const existingUser = await User.findOne({ email })
 		if (existingUser) {
-			return res.status(409).json({ message: "Email already exists" })
+			return res.status(409).json({ status: "fail", message: "Email already exists" })
 		}
 
 		// Hash the password before saving
 		const hashedPassword = await bcrypt.hash(password, 10)
 
-		// Create the user with the hashed password
 		const user = await User.create({
 			email,
 			password: hashedPassword,
@@ -119,15 +120,24 @@ const signup = async (req, res) => {
 			other_language: userProfile.otherLang ?? "",
 		})
 
-		res.status(201).json({ message: "User created successfully" })
+		res.status(201).json({
+			status: "success",
+			message: "User created successfully",
+		})
 	} catch (error) {
-		// Handle MongoDB validation error for unique constraint
-
+		// NOTE: Handle MongoDB validation error for unique constraint
 		if (error.code === 11000) {
-			return res.status(409).json({ message: "Email already exists" })
+			return res.status(409).json({
+				status: "fail",
+				message: "Email already exists",
+			})
 		}
 
-		res.status(500).json({ message: "Internal server error" })
+		res.status(500).json({
+			status: "fail",
+			message: "Internal server error",
+			error,
+		})
 	}
 }
 

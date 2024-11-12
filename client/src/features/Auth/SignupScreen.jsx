@@ -50,9 +50,19 @@ const SignupScreen = () => {
 
 						{/* ==== FORM ==== */}
 						{page === "userdata" && (
-							<UserDataForm setPage={setPage} setUserProfile={setUserProfile} />
+							<UserDataForm
+								setPage={setPage}
+								userProfile={userProfile}
+								setUserProfile={setUserProfile}
+							/>
 						)}
-						{page === "signup" && <SignupForm userProfile={userProfile} />}
+						{page === "signup" && (
+							<SignupForm
+								setPage={setPage}
+								userProfile={userProfile}
+								setUserProfile={setUserProfile}
+							/>
+						)}
 					</div>
 				</div>
 

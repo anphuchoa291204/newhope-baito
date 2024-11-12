@@ -9,13 +9,8 @@ const login = async (email, password) => {
 		})
 
 		// If the response is successful, return the response data
-		return response.data.message
+		return response.data
 	} catch (error) {
-		// Check for specific status codes returned by the backend
-		if (error.response && error.response.status === 401) {
-			throw new Error(error.response?.data?.message || "Invalid email or password")
-		}
-
 		// If it's a different error, throw a generic error message
 		throw new Error(error.response?.data?.message || "Failed to login")
 	}
@@ -30,11 +25,6 @@ const logout = async ({ email }) => {
 		// If the response is successful, return the response data
 		return response.data.message
 	} catch (error) {
-		// Check for specific status codes returned by the backend
-		if (error.response && error.response.status === 401) {
-			throw new Error(error.response?.data?.message || "User not found")
-		}
-
 		// If it's a different error, throw a generic error message
 		throw new Error(error.response?.data?.message || "Failed to logout")
 	}

@@ -4,10 +4,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 import Signin from "@/pages/Signin"
 import Signup from "@/pages/Signup"
+import Student from "@/pages/Student"
 import AppLayout from "@/pages/AppLayout"
 import Dashboard from "@/pages/Dashboard"
 import PageNotFound from "@/pages/PageNotFound"
-import Test from "@/pages/Test"
 
 const router = createBrowserRouter([
 	{
@@ -18,8 +18,8 @@ const router = createBrowserRouter([
 				element: <Dashboard />,
 			},
 			{
-				path: "/test",
-				element: <Test />,
+				path: "/student-list",
+				element: <Student />,
 			},
 		],
 	},

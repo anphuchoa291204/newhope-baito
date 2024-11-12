@@ -38,13 +38,13 @@ const SigninForm = () => {
 		try {
 			const { email, password } = data
 			// Call the login function that interacts with the backend
-			const message = await login(email, password)
+			const response = await login(email, password)
 
 			// If successful, log in to auth context and navigate
-			await loginAuth({ email })
+			await loginAuth(response.data)
 
 			// Show success message from the server
-			toast.success(message)
+			toast.success(response.message)
 
 			// Redirect to home page after successful login
 			navigate("/", { replace: true })

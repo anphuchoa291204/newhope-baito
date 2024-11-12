@@ -1,7 +1,4 @@
-// import LayersIcon from "@mui/icons-material/Layers"
 import DashboardIcon from "@mui/icons-material/Dashboard"
-// import BarChartIcon from "@mui/icons-material/BarChart"
-// import DescriptionIcon from "@mui/icons-material/Description"
 
 import toast from "react-hot-toast"
 
@@ -11,16 +8,17 @@ import { Outlet } from "react-router-dom"
 import { logout } from "@/services/authApi"
 import { useAuth } from "@/features/Auth/hooks/useAuth"
 
-import { Settings } from "@mui/icons-material"
+import { Workspaces } from "@mui/icons-material"
 import { createTheme, Typography } from "@mui/material"
 
 import { AppProvider } from "@toolpad/core/react-router-dom"
 import { PageContainer, DashboardLayout } from "@toolpad/core"
 
+// NOTE: segment is the route
 const NAVIGATION = [
 	{
 		kind: "header",
-		title: "Main items",
+		title: "Dashboard",
 	},
 	{
 		title: "Dashboard",
@@ -31,7 +29,7 @@ const NAVIGATION = [
 	},
 	{
 		kind: "header",
-		title: "Analytics",
+		title: "Management",
 	},
 	// {
 	// 	segment: "reports",
@@ -61,9 +59,10 @@ const NAVIGATION = [
 	// 	icon: <Settings />,
 	// },
 	{
-		segment: "test",
-		title: "Test",
-		icon: <Settings />,
+		segment: "student-list",
+		title: "Student List",
+		icon: <Workspaces />,
+		roles: ["admin"],
 	},
 ]
 
@@ -97,15 +96,15 @@ const customTheme = createTheme({
 	breakpoints: {
 		values: {
 			xs: 0,
-			sm: 600,
-			md: 600,
+			sm: 480,
+			md: 900,
 			lg: 1200,
 			xl: 1536,
 		},
 	},
 })
 
-function SidebarFooter({ mini }) {
+const SidebarFooter = ({ mini }) => {
 	return (
 		<Typography
 			variant="caption"
@@ -116,7 +115,7 @@ function SidebarFooter({ mini }) {
 	)
 }
 
-function AppLayout() {
+const AppLayout = () => {
 	const { userData, logout: logoutAuth } = useAuth()
 
 	const [session, setSession] = useState({
@@ -145,26 +144,32 @@ function AppLayout() {
 
 					await logoutAuth()
 
-					// Show success message from the server
 					toast.success(message)
 				} catch (error) {
-					// Display error message from the server or default message
 					toast.error(error?.message || "Sign in failed!")
 				}
 			},
 		}
 	}, [logoutAuth, userData?.email])
 
+	const FILTER_NAVIGATION = useMemo(() => {
+		return NAVIGATION.filter((item) => {
+			if (item.roles) {
+				return item.roles.includes(userData?.role)
+			}
+			return true
+		})
+	}, [userData?.role])
+
 	return (
-		// preview-start
 		<AppProvider
 			session={session}
 			authentication={authentication}
-			navigation={NAVIGATION}
+			navigation={FILTER_NAVIGATION}
 			branding={BRANDING}
 			theme={customTheme}
 		>
-			{/* slots: toolbarActions, sidebarFooter, toolbarAccount */}
+			{/* // NOTE: slots: toolbarActions, sidebarFooter, toolbarAccount */}
 			{/* 
 				toolbarActions dùng để hiển thị các action trên thanh toolbar
 				sidebarFooter dùng để hiển thị footer trong sidebar
@@ -175,15 +180,13 @@ function AppLayout() {
 				slots={{
 					sidebarFooter: SidebarFooter,
 				}}
-				slotProps={{
-					toolbarAccount: {
-						slotProps: {
-							signInButton: null,
-						},
+				sx={{
+					"& .MuiBox-root.css-b95f0i": {
+						overflow: "auto",
 					},
 				}}
 			>
-				<PageContainer style={{ width: "100%", maxWidth: "100%" }}>
+				<PageContainer style={{ width: "100%", maxWidth: "100%", overflow: "auto" }}>
 					<Outlet />
 				</PageContainer>
 			</DashboardLayout>
