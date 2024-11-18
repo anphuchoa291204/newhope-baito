@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Button,
 	InputLabel,
 	IconButton,
@@ -84,14 +83,8 @@ const SigninForm = () => {
 					})}
 				/>
 				{errors?.email && <FormHelperText error>{errors?.email?.message}</FormHelperText>}
-				{/* // {errors?.email && (
-					// 	<p sx={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.email?.message}</p>
-					// )}
-					
-					<Alert sx={{ marginTop: "10px" }} severity="error">
-						{errors?.email?.message}
-					</Alert>*/}
 			</FormControl>
+
 			<FormControl fullWidth>
 				<InputLabel htmlFor="password" error={errors?.password ? true : false}>
 					Password
@@ -114,15 +107,8 @@ const SigninForm = () => {
 					{...register("password", { required: "Please input your password!" })}
 				/>
 				{errors?.password && <FormHelperText error>{errors?.password?.message}</FormHelperText>}
-				{/* {errors?.password && (
-					<Alert sx={{ marginTop: "10px" }} severity="error">
-						{errors?.password?.message}
-					</Alert>
-					// {errors?.password && (
-					// 	<p sx={{ marginTop: '5px', color: '#D32F2F' }}>{errors?.password?.message}</p>
-					// )}
-				)} */}
 			</FormControl>
+
 			{/* <FormGroup sx={{ marginTop: '10px' }}>
             <FormControlLabel
               control={<Checkbox />}
@@ -132,6 +118,7 @@ const SigninForm = () => {
               {...register('remember')}
             />
           </FormGroup> */}
+
 			<FormControl fullWidth sx={{ marginTop: "20px" }}>
 				<Button
 					type="submit"

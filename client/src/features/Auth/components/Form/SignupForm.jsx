@@ -57,10 +57,8 @@ const SignupForm = ({ setPage, userProfile, setUserProfile }) => {
 				otherLang: "",
 			})
 
-			// Redirect to home page after successful login
 			navigate("/signin")
 		} catch (error) {
-			// Display error message from the server or default message
 			toast.error(error?.message || "Sign up failed!")
 		}
 	}

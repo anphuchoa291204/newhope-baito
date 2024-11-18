@@ -15,6 +15,7 @@ import {
 	TableFooter,
 	TableContainer,
 	TablePagination,
+	Checkbox,
 } from "@mui/material"
 
 import toast from "react-hot-toast"
@@ -26,6 +27,7 @@ import CreateUpdateForm from "../Form/CreateUpdateForm"
 import { getAllStudents, updateStudent } from "@/services/studentApi"
 import TableCustomPagination from "./Pagination/TableCustomPagination"
 import BulkMenuGlobal from "../Menu/BulkMenuGlobal"
+import { headCells } from "../../data/tableData"
 
 const CustomTableHeadCell = styled(TableCell)(({ theme }) => ({
 	borderBottom: `1px solid ${theme.palette.divider}`,
@@ -53,6 +55,10 @@ const StudentTable = () => {
 	const [students, setStudents] = useState([])
 	const [studentEdit, setStudentEdit] = useState(null)
 	const [selectedStudent, setSelectedStudent] = useState(null)
+
+	const [selected, setSelected] = useState([])
+	const numSelected = selected.length
+	const rowCount = students.length
 
 	const [rowsPerPage, setRowsPerPage] = useState(10)
 
@@ -107,6 +113,36 @@ const StudentTable = () => {
 		fetchStudents()
 	}, [])
 
+	// CHECKPOINT: Checkbox Select Option
+	const handleSelectAllClick = (event) => {
+		if (event.target.checked) {
+			const newSelected = students.map((n) => n._id)
+			setSelected(newSelected)
+			return
+		}
+		setSelected([])
+	}
+
+	const handleClick = (event, id) => {
+		const selectedIndex = selected.indexOf(id)
+		let newSelected = []
+
+		if (selectedIndex === -1) {
+			newSelected = newSelected.concat(selected, id)
+		} else if (selectedIndex === 0) {
+			newSelected = newSelected.concat(selected.slice(1))
+		} else if (selectedIndex === selected.length - 1) {
+			newSelected = newSelected.concat(selected.slice(0, -1))
+		} else if (selectedIndex > 0) {
+			newSelected = newSelected.concat(
+				selected.slice(0, selectedIndex),
+				selected.slice(selectedIndex + 1)
+			)
+		}
+		setSelected(newSelected)
+	}
+
+	// CHECKPOINT: Pagination
 	// Avoid a layout jump when reaching the last page with empty rows.
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - students.length) : 0
 
@@ -129,7 +165,6 @@ const StudentTable = () => {
 				setStudents((student) =>
 					student.map((item) => (item._id === studentEdit._id ? response.data : item))
 				)
-				// setStudents([...students, response.data])
 
 				toast.success(response.message)
 			} catch (error) {
@@ -169,27 +204,22 @@ const StudentTable = () => {
 				<Table size="medium" sx={{ width: "100%" }}>
 					<TableHead>
 						<TableRow>
-							<CustomTableHeadCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Fullname
-							</CustomTableHeadCell>
-							<CustomTableHeadCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Date Of Birth
-							</CustomTableHeadCell>
-							<CustomTableHeadCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Gender
-							</CustomTableHeadCell>
-							<CustomTableHeadCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Nationality
-							</CustomTableHeadCell>
-							<CustomTableHeadCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Major
-							</CustomTableHeadCell>
-							<CustomTableHeadCell align="center" sx={{ whiteSpace: "nowrap", minWidth: 100 }}>
-								Japanese Skill
-							</CustomTableHeadCell>
-							<CustomTableHeadCell align="center" sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-								Action
-							</CustomTableHeadCell>
+							<TableCell padding="checkbox">
+								<Checkbox
+									color="primary"
+									indeterminate={numSelected > 0 && numSelected < rowCount}
+									checked={rowCount > 0 && numSelected === rowCount}
+									onChange={handleSelectAllClick}
+									inputProps={{
+										"aria-label": "select all students",
+									}}
+								/>
+							</TableCell>
+							{headCells.map((headCell) => (
+								<CustomTableHeadCell key={headCell.id} align={headCell.align || "left"}>
+									{headCell.label}
+								</CustomTableHeadCell>
+							))}
 						</TableRow>
 					</TableHead>
 
@@ -197,38 +227,61 @@ const StudentTable = () => {
 						{(rowsPerPage > 0
 							? students.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							: students
-						)?.map((student, index) => (
-							<TableRow key={index} hover>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-									{student.fullname}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-									{formatDate(student.date_of_birth, "dd / MM / yyyy")}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-									{student.gender}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-									{student.nationality}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-									{student.major}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
-									{student.japan_skill}
-								</CustomTableCell>
-								<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
-									<Tooltip title="Bulk Actions">
-										<IconButton color="primary" onClick={(e) => handleOpenBulkItem(e, student)}>
-											<MoreVert fontSize="small" />
-										</IconButton>
-									</Tooltip>
-								</CustomTableCell>
-							</TableRow>
-						))}
+						)?.map((student, index) => {
+							const isItemSelected = selected.includes(student._id)
+							const labelId = `table-checkbox-${index}`
+
+							return (
+								<TableRow
+									key={student._id}
+									hover
+									role="checkbox"
+									tabIndex="-1"
+									onClick={(event) => handleClick(event, student._id)}
+									aria-checked={isItemSelected}
+									selected={isItemSelected}
+									sx={{ cursor: "pointer" }}
+								>
+									<TableCell padding="checkbox">
+										<Checkbox
+											color="primary"
+											checked={isItemSelected}
+											inputProps={{
+												"aria-labelledby": labelId,
+											}}
+										/>
+									</TableCell>
+									<CustomTableCell id={labelId} sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+										{student.fullname}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+										{formatDate(student.date_of_birth, "dd / MM / yyyy")}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+										{student.gender}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+										{student.nationality}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+										{student.major}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
+										{student.japan_skill}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
+										<Tooltip title="Bulk Actions">
+											<IconButton color="primary" onClick={(e) => handleOpenBulkItem(e, student)}>
+												<MoreVert fontSize="small" />
+											</IconButton>
+										</Tooltip>
+									</CustomTableCell>
+								</TableRow>
+							)
+						})}
 						{emptyRows > 0 && (
 							<TableRow style={{ height: 69 * emptyRows }}>
-								<TableCell colSpan={7} />
+								<TableCell colSpan={8} />
 							</TableRow>
 						)}
 					</TableBody>
