@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
+import mongoose from "mongoose"
+import dotenv from "dotenv"
 
 dotenv.config()
 
@@ -9,18 +9,18 @@ const connectToDatabase = async () => {
 	// mongoose.set('strictQuery', true)
 
 	if (isConnected) {
-		console.log('mongoDB is already connected')
+		console.log("mongoDB is already connected")
 		return
 	}
 
 	try {
 		await mongoose.connect(process.env.MONGODB_URI, {
-			dbName: 'AgencySoftware',
+			dbName: "AgencySoftware",
 		})
 
 		isConnected = true
 
-		console.log('mongoDB connected')
+		console.log("mongoDB connected")
 	} catch (error) {
 		console.error(error)
 	}

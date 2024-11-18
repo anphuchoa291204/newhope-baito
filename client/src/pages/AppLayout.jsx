@@ -1,84 +1,200 @@
-import * as React from 'react'
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import BarChartIcon from '@mui/icons-material/BarChart'
-import DescriptionIcon from '@mui/icons-material/Description'
-import LayersIcon from '@mui/icons-material/Layers'
-import { AppProvider } from '@toolpad/core/AppProvider'
-import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import { Outlet } from 'react-router-dom'
-import { Settings } from '@mui/icons-material'
+import DashboardIcon from "@mui/icons-material/Dashboard"
 
+import toast from "react-hot-toast"
+
+import { useMemo } from "react"
+import { useState } from "react"
+import { Outlet } from "react-router-dom"
+import { logout } from "@/services/authApi"
+import { useAuth } from "@/features/Auth/hooks/useAuth"
+
+import { Workspaces } from "@mui/icons-material"
+import { createTheme, Typography } from "@mui/material"
+
+import { AppProvider } from "@toolpad/core/react-router-dom"
+import { PageContainer, DashboardLayout } from "@toolpad/core"
+
+// NOTE: segment is the route
 const NAVIGATION = [
 	{
-		kind: 'header',
-		title: 'Main items',
+		kind: "header",
+		title: "Dashboard",
 	},
 	{
-		segment: 'dashboard',
-		title: 'Dashboard',
+		title: "Dashboard",
 		icon: <DashboardIcon />,
 	},
 	{
-		kind: 'divider',
+		kind: "divider",
 	},
 	{
-		kind: 'header',
-		title: 'Analytics',
+		kind: "header",
+		title: "Management",
 	},
+	// {
+	// 	segment: "reports",
+	// 	title: "Reports",
+	// 	icon: <BarChartIcon />,
+	// 	children: [
+	// 		{
+	// 			segment: "sales",
+	// 			title: "Sales",
+	// 			icon: <DescriptionIcon />,
+	// 		},
+	// 		{
+	// 			segment: "traffic",
+	// 			title: "Traffic",
+	// 			icon: <DescriptionIcon />,
+	// 		},
+	// 	],
+	// },
+	// {
+	// 	segment: "integrations",
+	// 	title: "Integrations",
+	// 	icon: <LayersIcon />,
+	// },
+	// {
+	// 	segment: "settings",
+	// 	title: "Settings",
+	// 	icon: <Settings />,
+	// },
 	{
-		segment: 'reports',
-		title: 'Reports',
-		icon: <BarChartIcon />,
-		children: [
-			{
-				segment: 'sales',
-				title: 'Sales',
-				icon: <DescriptionIcon />,
-			},
-			{
-				segment: 'traffic',
-				title: 'Traffic',
-				icon: <DescriptionIcon />,
-			},
-		],
-	},
-	{
-		segment: 'integrations',
-		title: 'Integrations',
-		icon: <LayersIcon />,
-	},
-	{
-		segment: 'settings',
-		title: 'Settings',
-		icon: <Settings />,
+		segment: "student-list",
+		title: "Student List",
+		icon: <Workspaces />,
+		roles: ["admin"],
 	},
 ]
 
-function AppLayout() {
-	const [pathname, setPathname] = React.useState('/dashboard')
+const BRANDING = {
+	title: "Newhope Baito",
+	logo: <img src="/assets/icon/logo.png" alt="logo" />,
+}
 
-	const router = React.useMemo(() => {
+const customTheme = createTheme({
+	cssVariables: {
+		colorSchemeSelector: "data-toolpad-color-scheme",
+	},
+	colorSchemes: {
+		light: {
+			palette: {
+				TableCell: {
+					border: "#E0E0E0",
+				},
+				background: {
+					default: "#F9F9FE",
+					paper: "#EEEEF9",
+				},
+			},
+		},
+		dark: {
+			palette: {
+				TableCell: {
+					border: "#515151",
+				},
+				background: {
+					default: "#2A4364",
+					paper: "#112E4D",
+				},
+			},
+		},
+	},
+	breakpoints: {
+		values: {
+			xs: 0,
+			sm: 480,
+			md: 900,
+			lg: 1200,
+			xl: 1536,
+		},
+	},
+})
+
+const SidebarFooter = ({ mini }) => {
+	return (
+		<Typography
+			variant="caption"
+			sx={{ m: 1, whiteSpace: "nowrap", overflow: "hidden", textAlign: mini ? "left" : "center" }}
+		>
+			{mini ? "© NHB" : `© ${new Date().getFullYear()} Made with love by NEWHOPE BAITO`}
+		</Typography>
+	)
+}
+
+const AppLayout = () => {
+	const { userData, logout: logoutAuth } = useAuth()
+
+	const [session, setSession] = useState({
+		user: {
+			name: "Phuc Hoa",
+			email: userData?.email,
+			image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
+		},
+	})
+
+	const authentication = useMemo(() => {
 		return {
-			pathname,
-			searchParams: new URLSearchParams(),
-			navigate: (path) => setPathname(String(path)),
+			signIn: () => {
+				setSession({
+					user: {
+						name: "Phuc Hoa",
+						email: userData?.email,
+						image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
+					},
+				})
+			},
+			signOut: async () => {
+				setSession(null)
+				try {
+					const message = await logout({ email: userData?.email })
+
+					await logoutAuth()
+
+					toast.success(message)
+				} catch (error) {
+					toast.error(error?.message || "Sign in failed!")
+				}
+			},
 		}
-	}, [pathname])
+	}, [logoutAuth, userData?.email])
+
+	const FILTER_NAVIGATION = useMemo(() => {
+		return NAVIGATION.filter((item) => {
+			if (item.roles) {
+				return item.roles.includes(userData?.role)
+			}
+			return true
+		})
+	}, [userData?.role])
 
 	return (
-		// preview-start
 		<AppProvider
-			navigation={NAVIGATION}
-			branding={{
-				title: 'Newhope Baito',
-				logo: <img src='/assets/icon/logo.png' alt='logo' />,
-			}}
-			router={router}
+			session={session}
+			authentication={authentication}
+			navigation={FILTER_NAVIGATION}
+			branding={BRANDING}
+			theme={customTheme}
 		>
-			<DashboardLayout>
-				<div style={{ padding: 20 }}>
+			{/* // NOTE: slots: toolbarActions, sidebarFooter, toolbarAccount */}
+			{/* 
+				toolbarActions dùng để hiển thị các action trên thanh toolbar
+				sidebarFooter dùng để hiển thị footer trong sidebar
+				toolbarAccount dùng để hiển thị thông tin người dùng trên thanh toolbar
+			*/}
+			<DashboardLayout
+				defaultSidebarCollapsed
+				slots={{
+					sidebarFooter: SidebarFooter,
+				}}
+				sx={{
+					"& .MuiBox-root.css-b95f0i": {
+						overflow: "auto",
+					},
+				}}
+			>
+				<PageContainer style={{ width: "100%", maxWidth: "100%", overflow: "auto" }}>
 					<Outlet />
-				</div>
+				</PageContainer>
 			</DashboardLayout>
 		</AppProvider>
 	)

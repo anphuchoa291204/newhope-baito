@@ -1,29 +1,16 @@
-import express from 'express'
-import cors from 'cors'
-import connectToDatabase from './utils/database.js'
-import authRouter from './src/routes/auth.routes.js'
-// const authRoutes = require('./src/routes/auth.routes') // Import the auth routes
+import dotenv from "dotenv"
+dotenv.config()
 
-const app = express()
+import app from "./app.js"
 
-// Middleware
-app.use(express.json())
-app.use(cors())
-
-connectToDatabase()
-
-// Connect to MongoDB
-// connectToDatabase()
-
-// Use the auth routes
-// app.use('/api/auth', authRoutes)
-
-app.use('/auth', authRouter)
-
-app.get('/', (req, res) => {
-	res.send('Hello World')
+const PORT = process.env.PORT || 8080
+app.listen(PORT, () => {
+	console.log("Server is running on port 8080")
 })
 
-app.listen(8080, () => {
-	console.log('Server is running on port 8080')
+// CHECKPOINT: UNHANDLED REJECTION
+process.on("unhandledRejection", (err) => {
+	console.log(err.name, err.message)
+	console.log("UNHANDLED REJECTION! Shutting down...")
+	process.exit(1)
 })

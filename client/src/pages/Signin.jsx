@@ -1,7 +1,7 @@
-import SigninForm from '../features/Auth/SigninForm'
+import SigninScreen from "../features/Auth/SigninScreen"
 
 const Signin = () => {
-	return <SigninForm />
+	return <SigninScreen />
 }
 
 export default Signin

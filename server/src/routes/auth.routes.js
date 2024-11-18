@@ -1,88 +1,140 @@
-// // routes/auth.js
-
-// const express = require('express')
-// const bcrypt = require('bcrypt')
-// const jwt = require('jsonwebtoken')
-// const User = require('../../models/user') // Import the user model
-
-// const router = express.Router()
-
-// // Login route
-// router.post('/login', async (req, res) => {
-// 	const { username, password } = req.body
-
-// 	try {
-// 		// Find the user by username
-// 		const user = await User.findOne({ username })
-
-// 		if (!user) {
-// 			return res.status(404).json({ message: 'User not found' })
-// 		}
-
-// 		// Validate password
-// 		const isPasswordValid = await bcrypt.compare(password, user.auth_token) // Assuming `auth_token` is used for password storage
-// 		if (!isPasswordValid) {
-// 			user.failed_attempts += 1
-// 			await user.save()
-// 			return res.status(401).json({ message: 'Invalid credentials' })
-// 		}
-
-// 		// Generate a new JWT token for the session
-// 		const authToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
-
-// 		// Update user details on successful login
-// 		user.login_status = 'success'
-// 		user.last_login = new Date()
-// 		user.login_timestamp = new Date()
-// 		user.auth_token = authToken // Update with the new token
-// 		user.failed_attempts = 0
-// 		user.is_active = true
-// 		user.ip_address = req.ip
-// 		user.user_agent = req.headers['user-agent']
-// 		user.session_id = `session-${new Date().getTime()}` // Generate a new session ID
-// 		await user.save()
-
-// 		// Send response
-// 		res.status(200).json({ message: 'Login successful', authToken })
-// 	} catch (error) {
-// 		console.error('Login error:', error)
-// 		res.status(500).json({ message: 'Internal server error' })
-// 	}
-// })
-
-// // Logout route
-// router.post('/logout', async (req, res) => {
-// 	const { username } = req.body
-
-// 	try {
-// 		// Find the user by username
-// 		const user = await User.findOne({ username })
-
-// 		if (!user) {
-// 			return res.status(404).json({ message: 'User not found' })
-// 		}
-
-// 		// Update logout details
-// 		user.logout_timestamp = new Date()
-// 		user.is_active = false
-// 		user.auth_token = null // Invalidate the token
-// 		await user.save()
-
-// 		// Send response
-// 		res.status(200).json({ message: 'Logout successful' })
-// 	} catch (error) {
-// 		console.error('Logout error:', error)
-// 		res.status(500).json({ message: 'Internal server error' })
-// 	}
-// })
-
-// module.exports = router
-
-import express from 'express'
-import login from '../controller/auth.controller.js'
+import express from "express"
+import { login, logout, signup } from "../controller/auth.controller.js"
 
 const router = express.Router()
 
-router.post('/login', login)
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - "Authentication"
+ *     summary: User login to the application
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     role:
+ *                       type: string
+ *                       example: admin
+ *                     email:
+ *                       type: string
+ *                       example: user@example.com
+ *                     accessToken:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: fail
+ *                 message:
+ *                   type: string
+ *                   example: An error occurred while processing your request
+ */
+// Login route
+router.post("/login", login)
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     tags:
+ *       - "Authentication"
+ *     summary: User logout from the application
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *     responses:
+ *       200:
+ *         description: Successful logout
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Logout successful
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+// Logout route
+router.post("/logout", logout)
+
+// Signup route
+router.post("/signup", signup)
 
 export default router
