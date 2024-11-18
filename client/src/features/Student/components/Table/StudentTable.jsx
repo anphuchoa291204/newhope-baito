@@ -25,7 +25,7 @@ import BulkMenuSmall from "../Menu/BulkMenuSmall"
 import CreateUpdateForm from "../Form/CreateUpdateForm"
 import { getAllStudents, updateStudent } from "@/services/studentApi"
 import TableCustomPagination from "./Pagination/TableCustomPagination"
-// import BulkMenuGlobal from "../Menu/BulkMenuGlobal"
+import BulkMenuGlobal from "../Menu/BulkMenuGlobal"
 
 const CustomTableHeadCell = styled(TableCell)(({ theme }) => ({
 	borderBottom: `1px solid ${theme.palette.divider}`,
@@ -57,16 +57,16 @@ const StudentTable = () => {
 	const [rowsPerPage, setRowsPerPage] = useState(10)
 
 	// CHECKPOINT: Bulk Actions Menu Global
-	// const [anchorEl, setAnchorEl] = useState(null)
-	// const openBulkGlobal = Boolean(anchorEl)
+	const [anchorEl, setAnchorEl] = useState(null)
+	const openBulkGlobal = Boolean(anchorEl)
 
-	// const handleOpenBulkGlobal = (event) => {
-	// 	setAnchorEl(event.currentTarget)
-	// }
+	const handleOpenBulkGlobal = (event) => {
+		setAnchorEl(event.currentTarget)
+	}
 
-	// const handleCloseBulkGlobal = () => {
-	// 	setAnchorEl(null)
-	// }
+	const handleCloseBulkGlobal = () => {
+		setAnchorEl(null)
+	}
 
 	// CHECKPOINT: Bulk Actions Menu Items
 	const [anchorElItem, setAnchorElItem] = useState(null)
@@ -150,7 +150,7 @@ const StudentTable = () => {
 
 	return (
 		<>
-			{/* <Box sx={{ width: "100%" }}>
+			<Box sx={{ width: "100%" }}>
 				<Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
 					<Button
 						variant="contained"
@@ -163,7 +163,7 @@ const StudentTable = () => {
 						Bulk Actions
 					</Button>
 				</Box>
-			</Box> */}
+			</Box>
 
 			<TableContainer component={Paper}>
 				<Table size="medium" sx={{ width: "100%" }}>
@@ -255,12 +255,12 @@ const StudentTable = () => {
 			</EditModal>
 
 			{/* ==== BULK MENU GLOBAL ==== */}
-			{/* <BulkMenuGlobal
+			<BulkMenuGlobal
 				open={openBulkGlobal}
 				anchorEl={anchorEl}
 				onClose={handleCloseBulkGlobal}
 				students={students}
-			/> */}
+			/>
 
 			{/* ==== BULK MENU SMALL ==== */}
 			<BulkMenuSmall
