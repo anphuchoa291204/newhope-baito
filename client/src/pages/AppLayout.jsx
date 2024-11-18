@@ -78,6 +78,9 @@ const customTheme = createTheme({
 	colorSchemes: {
 		light: {
 			palette: {
+				TableCell: {
+					border: "#E0E0E0",
+				},
 				background: {
 					default: "#F9F9FE",
 					paper: "#EEEEF9",
@@ -86,6 +89,9 @@ const customTheme = createTheme({
 		},
 		dark: {
 			palette: {
+				TableCell: {
+					border: "#515151",
+				},
 				background: {
 					default: "#2A4364",
 					paper: "#112E4D",
