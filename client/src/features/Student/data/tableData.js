@@ -25,6 +25,11 @@ export const headCells = [
 		align: "center",
 	},
 	{
+		id: "register",
+		label: "Register",
+		align: "center",
+	},
+	{
 		id: "action",
 		label: "Action",
 		align: "center",

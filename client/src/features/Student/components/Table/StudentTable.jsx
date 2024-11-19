@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { KeyboardArrowDown, MoreVert } from "@mui/icons-material"
+import { Cancel, CheckCircle, KeyboardArrowDown, MoreVert } from "@mui/icons-material"
 import {
 	Box,
 	Button,
@@ -85,6 +85,7 @@ const StudentTable = () => {
 
 	// NOTE: Modify handleOpenBulk to receive student data
 	const handleOpenBulkItem = (event, student) => {
+		event.stopPropagation()
 		setAnchorElItem(event.currentTarget)
 		setSelectedStudent(student)
 	}
@@ -270,6 +271,10 @@ const StudentTable = () => {
 										{student.japan_skill}
 									</CustomTableCell>
 									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
+										{/* {student.user_id ? <CheckCircle color="success" /> : <Cancel color="error" />} */}
+										{student.user_id ? "Yes" : "No"}
+									</CustomTableCell>
+									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
 										<Tooltip title="Bulk Actions">
 											<IconButton color="primary" onClick={(e) => handleOpenBulkItem(e, student)}>
 												<MoreVert fontSize="small" />
@@ -281,7 +286,7 @@ const StudentTable = () => {
 						})}
 						{emptyRows > 0 && (
 							<TableRow style={{ height: 69 * emptyRows }}>
-								<TableCell colSpan={8} />
+								<TableCell colSpan={9} />
 							</TableRow>
 						)}
 					</TableBody>
