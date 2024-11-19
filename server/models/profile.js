@@ -5,8 +5,8 @@ const { Schema, models, model } = mongoose
 const profileSchema = new Schema({
 	user_id: {
 		type: Schema.Types.ObjectId,
-		ref: "User",
-		required: [true, "User ID is required"],
+		// ref: "User",
+		// required: [true, "User ID is required"], // NOTE: This is an optional due to import features !!!
 	},
 	fullname: {
 		type: String,

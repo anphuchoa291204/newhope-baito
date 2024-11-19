@@ -4,8 +4,6 @@ import CardList from "../features/Dashboard/components/Card/CardList"
 const Dashboard = () => {
 	const theme = useTheme()
 
-	console.log(theme.palette.primary.main)
-
 	return (
 		<>
 			<CardList />
