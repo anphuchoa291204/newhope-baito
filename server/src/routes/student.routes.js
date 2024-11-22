@@ -1,5 +1,11 @@
 import express from "express"
-import { getAllStudents, updateStudent } from "../controller/student.controller.js"
+import {
+	createStudent,
+	getAllStudents,
+	updateStudent,
+	createImportStudent,
+	deleteStudent,
+} from "../controller/student.controller.js"
 
 const router = express.Router()
 
@@ -136,12 +142,9 @@ const router = express.Router()
  *                   example: An error occurred while processing your request
  */
 
-router
-	.route("/")
-	.get(getAllStudents)
-	.post((req, res) => {
-		res.status(501).json({ message: "Not implemented yet" })
-	})
+router.route("/").get(getAllStudents).post(createStudent)
+
+router.route("/import").post(createImportStudent)
 
 /**
  * @swagger
@@ -269,6 +272,6 @@ router
  *                   type: string
  *                   example: An error occurred while processing your request
  */
-router.route("/:id").patch(updateStudent)
+router.route("/:id").patch(updateStudent).delete(deleteStudent)
 
 export default router

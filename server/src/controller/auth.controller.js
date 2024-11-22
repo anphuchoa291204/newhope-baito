@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 import User from "../../models/user.js"
@@ -12,56 +11,65 @@ const login = catchAsync(async (req, res, next) => {
 	const { email, password } = req.body
 	const sessionId = req.sessionID
 
-	// Find the user by email
-	const user = await User.findOne({ email })
-	const profile = await Profile.findOne({ user_id: user._id })
-	const accessToken = jwt.sign(
-		{ email, name: profile.fullname, role: user.role },
-		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: "24h" }
-	)
-
+	// Find user and profile
+	const user = await User.findOne({ email }).select("+password")
 	if (!user) {
-		return next(new AppError(`Invalid email or password`, 401))
+		return next(new AppError("Invalid email or password", 401))
 	}
 
-	// Compare the provided password with the hashed password stored in the database
-	const passwordMatch = await bcrypt.compare(password, user.password)
+	const profile = await Profile.findOne({ user_id: user?._id })
+	if (!profile) {
+		return next(new AppError("User profile not found", 401))
+	}
 
-	if (passwordMatch && user.is_active) {
-		user.failed_attempts = 0
-		user.session_id = sessionId
-		user.login_status = "success"
-		user.user_agent = req.headers["user-agent"]
-		user.login_timestamp = formatDate(new Date())
-		user.auth_token = accessToken
-
-		await user.save()
-
-		// Store user ID in the session
-		// req.session.userId = user._id
-
-		res.status(200).json({
-			status: "success",
-			message: "Login successful",
-			data: {
-				accessToken,
-				userId: user._id,
-			},
-		})
-	} else {
+	// Validate password
+	const isValidPassword = await user.passwordMatch(password, user.password)
+	if (!isValidPassword) {
 		// if (user.failed_attempts >= 3) {
 		// 	user.is_active = false // Lock the account if the failed_attempts counter reaches 3
 		// 	return res.status(401).json({ message: "Account locked. Please reset your password" })
 		// }
 
+		// Handle failed login attempt
 		user.failed_attempts += 1
 		user.login_status = "failure"
 		user.fail_login_timestamp = formatDate(new Date())
-
 		await user.save()
-		next(new AppError(`Invalid email or password`, 401))
+
+		return next(new AppError("Invalid email or password", 401))
 	}
+
+	// Check account status
+	if (!user.is_active) {
+		return next(new AppError("Account is locked. Please reset your password", 401))
+	}
+
+	// Generate access token
+	const accessToken = jwt.sign(
+		{ email, name: profile.fullname, role: profile.role },
+		process.env.ACCESS_TOKEN_SECRET,
+		{ expiresIn: "24h" }
+	)
+
+	// Update successful login data
+	user.failed_attempts = 0
+	user.session_id = sessionId
+	user.login_status = "success"
+	user.user_agent = req.headers["user-agent"]
+	user.login_timestamp = formatDate(new Date())
+	user.auth_token = accessToken
+
+	await user.save()
+
+	// Send success response
+	res.status(200).json({
+		status: "success",
+		message: "Login successful",
+		data: {
+			accessToken,
+			userId: user._id,
+		},
+	})
 })
 
 // TODO: Check logout function - not working yet
@@ -105,12 +113,9 @@ const signup = catchAsync(async (req, res, next) => {
 		return next(new AppError(`Email already exists`, 409))
 	}
 
-	// Hash the password before saving
-	const hashedPassword = await bcrypt.hash(password, 10)
-
 	const user = await User.create({
 		email,
-		password: hashedPassword,
+		password,
 	})
 
 	// Create the profile with all required fields
@@ -130,14 +135,6 @@ const signup = catchAsync(async (req, res, next) => {
 		status: "success",
 		message: "User created successfully",
 	})
-
-	// // NOTE: Handle MongoDB validation error for unique constraint
-	// if (error.code === 11000) {
-	// 	return res.status(409).json({
-	// 		status: "fail",
-	// 		message: "Email already exists",
-	// 	})
-	// }
 })
 
 export { login, logout, signup }

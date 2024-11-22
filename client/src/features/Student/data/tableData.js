@@ -6,18 +6,22 @@ export const headCells = [
 	{
 		id: "date_of_birth",
 		label: "Date Of Birth",
+		align: "center",
 	},
 	{
 		id: "gender",
 		label: "Gender",
+		align: "center",
 	},
 	{
 		id: "nationality",
 		label: "Nationality",
+		align: "center",
 	},
 	{
 		id: "major",
 		label: "Major",
+		align: "center",
 	},
 	{
 		id: "japan_skill",

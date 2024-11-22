@@ -24,10 +24,11 @@ import { formatDate } from "date-fns"
 import EditModal from "../Modal/StudentModal"
 import BulkMenuSmall from "../Menu/BulkMenuSmall"
 import CreateUpdateForm from "../Form/CreateUpdateForm"
-import { getAllStudents, updateStudent } from "@/services/studentApi"
+import { deleteStudent, getAllStudents, updateStudent } from "@/services/studentApi"
 import TableCustomPagination from "./Pagination/TableCustomPagination"
 import BulkMenuGlobal from "../Menu/BulkMenuGlobal"
 import { headCells } from "../../data/tableData"
+import ConfirmModal from "../Modal/ConfirmModal"
 
 const CustomTableHeadCell = styled(TableCell)(({ theme }) => ({
 	borderBottom: `1px solid ${theme.palette.divider}`,
@@ -41,6 +42,9 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 		borderRight: "none",
 	},
 	border: `1px solid ${theme.palette.divider}`,
+	whiteSpace: "nowrap",
+	minWidth: 150,
+	textAlign: "center",
 }))
 
 const CusttomeTableFooterCell = styled(TablePagination)(() => ({
@@ -51,6 +55,7 @@ const StudentTable = () => {
 	// NOTE: Page for Pagination
 	const [page, setPage] = useState(0)
 	const [open, setOpen] = useState(false)
+	const [openConfirm, setOpenConfirm] = useState(false)
 
 	const [students, setStudents] = useState([])
 	const [studentEdit, setStudentEdit] = useState(null)
@@ -114,6 +119,17 @@ const StudentTable = () => {
 		fetchStudents()
 	}, [])
 
+	// CHECKPOINT: Confirm Modal
+	const handleOpenConfirm = () => {
+		setOpenConfirm(true)
+		setAnchorElItem(null)
+	}
+
+	const handleCloseConfirm = () => {
+		setOpenConfirm(false)
+		setSelectedStudent(null)
+	}
+
 	// CHECKPOINT: Checkbox Select Option
 	const handleSelectAllClick = (event) => {
 		if (event.target.checked) {
@@ -156,6 +172,18 @@ const StudentTable = () => {
 		setPage(0)
 	}
 
+	// CHECKPOINT: Refresth Table Data
+	const refreshStudents = async () => {
+		try {
+			const data = await getAllStudents()
+			setStudents(data?.data)
+		} catch (error) {
+			console.error("Error fetching students:", error)
+		}
+	}
+
+	// CHECKPOINT: Create or Update Student
+
 	const createOrUpdate = async (student, resetForm) => {
 		if (student._id === 0) {
 			console.log("???")
@@ -175,13 +203,18 @@ const StudentTable = () => {
 		resetForm()
 		setStudentEdit(null)
 		setOpen(false)
-		getAllStudents()
-			.then((response) => {
-				setStudents(response.data)
-			})
-			.catch((error) => {
-				console.error("Error fetching students:", error)
-			})
+		refreshStudents()
+	}
+
+	const handleDelete = async (id) => {
+		try {
+			await deleteStudent(id)
+			refreshStudents()
+			handleCloseConfirm()
+			toast.success("Student deleted successfully!")
+		} catch (error) {
+			toast.error(error?.message || "Failed to delete student")
+		}
 	}
 
 	return (
@@ -252,29 +285,21 @@ const StudentTable = () => {
 											}}
 										/>
 									</TableCell>
-									<CustomTableCell id={labelId} sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+									<CustomTableCell id={labelId} sx={{ textAlign: "left" }}>
 										{student.fullname}
 									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
+									<CustomTableCell>
 										{formatDate(student.date_of_birth, "dd / MM / yyyy")}
 									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-										{student.gender}
+									<CustomTableCell>{student.gender}</CustomTableCell>
+									<CustomTableCell>{student.nationality}</CustomTableCell>
+									<CustomTableCell>{student.major}</CustomTableCell>
+									<CustomTableCell>{student.japan_skill}</CustomTableCell>
+									<CustomTableCell>
+										{student.user_id ? <CheckCircle color="success" /> : <Cancel color="error" />}
+										{/* {student.user_id ? "Yes" : "No"} */}
 									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-										{student.nationality}
-									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }}>
-										{student.major}
-									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
-										{student.japan_skill}
-									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
-										{/* {student.user_id ? <CheckCircle color="success" /> : <Cancel color="error" />} */}
-										{student.user_id ? "Yes" : "No"}
-									</CustomTableCell>
-									<CustomTableCell sx={{ whiteSpace: "nowrap", minWidth: 150 }} align="center">
+									<CustomTableCell>
 										<Tooltip title="Bulk Actions">
 											<IconButton color="primary" onClick={(e) => handleOpenBulkItem(e, student)}>
 												<MoreVert fontSize="small" />
@@ -312,12 +337,21 @@ const StudentTable = () => {
 				<CreateUpdateForm createOrUpdate={createOrUpdate} studentEdit={studentEdit} />
 			</EditModal>
 
+			{/* ==== CONFIRM MODAL ==== */}
+			<ConfirmModal
+				open={openConfirm}
+				handleClose={handleCloseConfirm}
+				onDelete={handleDelete}
+				student={selectedStudent}
+			/>
+
 			{/* ==== BULK MENU GLOBAL ==== */}
 			<BulkMenuGlobal
 				open={openBulkGlobal}
 				anchorEl={anchorEl}
 				onClose={handleCloseBulkGlobal}
 				students={students}
+				onRefresh={refreshStudents}
 			/>
 
 			{/* ==== BULK MENU SMALL ==== */}
@@ -326,6 +360,7 @@ const StudentTable = () => {
 				anchorEl={anchorElItem}
 				onClose={handleCloseBulkItem}
 				onEdit={handleBulkEdit}
+				handleOpenConfirm={handleOpenConfirm}
 			/>
 		</>
 	)

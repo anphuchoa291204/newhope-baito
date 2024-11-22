@@ -24,6 +24,28 @@ export const getAllStudents = async () => {
 	}
 }
 
+export const createStudent = async (data) => {
+	try {
+		const response = await axiosClient.post(`/students`, data)
+
+		return response.data
+	} catch (error) {
+		// If it's a different error, throw a generic error message
+		throw new Error(error.response?.data?.message || "Failed to create students")
+	}
+}
+
+export const createImportStudent = async (data) => {
+	try {
+		const response = await axiosClient.post(`/students/import`, { students: data })
+
+		return response.data
+	} catch (error) {
+		// If it's a different error, throw a generic error message
+		throw new Error(error.response?.data?.message || "Failed to import students")
+	}
+}
+
 export const updateStudent = async (id, data) => {
 	try {
 		const response = await axiosClient.patch(`/students/${id}`, data)
@@ -32,5 +54,14 @@ export const updateStudent = async (id, data) => {
 	} catch (error) {
 		// If it's a different error, throw a generic error message
 		throw new Error(error.response?.data?.message || "Failed to update students")
+	}
+}
+
+export const deleteStudent = async (id) => {
+	try {
+		await axiosClient.delete(`/students/${id}`)
+	} catch (error) {
+		// If it's a different error, throw a generic error message
+		throw new Error(error.response?.data?.message || "Failed to delete students")
 	}
 }
