@@ -1,5 +1,5 @@
 import { format as formatDate } from "date-fns"
-import * as XLSX from "xlsx"
+import * as XLSX from "xlsx-js-style"
 
 const exportToExcel = (students) => {
 	// Prepare the data
@@ -15,65 +15,60 @@ const exportToExcel = (students) => {
 	}))
 
 	// Create worksheet
-	const ws = XLSX.utils.json_to_sheet(excelData)
+	const ws = XLSX.utils.json_to_sheet(excelData, { origin: "A3" }) // Data starts at Row 3
 
-	// Get all column names (A, B, C, etc.)
-	const cols = Object.keys(ws).filter((key) => key.match(/^[A-Z]+1$/))
-	const rows = Object.keys(ws).filter((key) => key.match(/^[A-Z]+[2-9]+$/))
+	// Add a big caption at the top of the sheet
+	XLSX.utils.sheet_add_aoa(ws, [["Student List Table"]], { origin: "A1" })
 
-	// Style configurations
-	const borderStyle = {
-		style: "thin",
-		color: { rgb: "000000" },
+	// Merge cells for the caption across the correct number of columns
+	const numberOfColumns = Object.keys(excelData[0]).length // Count the number of columns
+	ws["!merges"] = [
+		{
+			s: { r: 0, c: 0 }, // Start (Row 1, Col 1)
+			e: { r: 0, c: numberOfColumns - 1 }, // End (Row 1, Last Col)
+		},
+	]
+
+	// Style the caption (bold, center, large font)
+	ws["A1"].s = {
+		font: { bold: true, sz: 16 }, // Bold and larger font
+		alignment: { horizontal: "center", vertical: "center" }, // Center alignment
 	}
 
-	// Add styles to worksheet
-	ws["!cols"] = cols.map(() => ({ wch: 20 })) // Set column width
-	ws["!rows"] = rows.map(() => ({ hpt: 25 }))
-
-	// ws["!cols"] = [ { wch: 10 } ]; // INFO: set column A width to 10 characters
-
-	// Center align and add borders to all cells
-	const centerAlignment = {
-		horizontal: "center",
-		vertical: "center",
-	}
-
-	// Style headers (bold) and add borders
-	for (let i = 0; i < cols.length; i++) {
-		const headerCell = cols[i]
-
-		// Style header cells (bold, centered, bordered)
+	// Style headers (row 3)
+	const headerRow = Object.keys(ws).filter((key) => key.match(/^[A-Z]+3$/))
+	const borderStyle = { style: "thin", color: { rgb: "000000" } }
+	const headerBackgroundColor = { rgb: "D9E1F2" } // Light blue header color
+	headerRow.forEach((headerCell) => {
+		const column = headerCell[0] // Get column letter
 		if (ws[headerCell]) {
 			ws[headerCell].s = {
-				font: { bold: true },
-				alignment: centerAlignment,
-				border: {
-					top: borderStyle,
-					bottom: borderStyle,
-					left: borderStyle,
-					right: borderStyle,
+				font: { bold: true }, // Bold headers
+				alignment: { horizontal: column === "A" ? "left" : "center", vertical: "center" }, // Center align
+				border: { top: borderStyle, bottom: borderStyle, left: borderStyle, right: borderStyle }, // Borders
+				fill: { fgColor: headerBackgroundColor }, // Header background color
+			}
+		}
+	})
+
+	// Style data rows
+	Object.keys(ws)
+		.filter((key) => key.match(/^[A-Z]+[4-9][0-9]*$/)) // Data rows start at Row 4
+		.forEach((dataCell) => {
+			const column = dataCell[0] // Get column letter
+			ws[dataCell].s = {
+				alignment: {
+					horizontal: column === "A" ? "left" : "center", // Left-align Full Name column
+					vertical: "center",
 				},
+				border: { top: borderStyle, bottom: borderStyle, left: borderStyle, right: borderStyle }, // Borders
 			}
-		}
+		})
 
-		// Style data cells
-		for (let row = 2; row <= excelData.length + 1; row++) {
-			const cellRef = `${cols[i][0]}${row}`
-
-			if (ws[cellRef]) {
-				ws[cellRef].s = {
-					alignment: centerAlignment,
-					border: {
-						top: borderStyle,
-						bottom: borderStyle,
-						left: borderStyle,
-						right: borderStyle,
-					},
-				}
-			}
-		}
-	}
+	// Set column widths
+	ws["!cols"] = Object.keys(excelData[0]).map((key, index) =>
+		index === 0 ? { wch: 25 } : { wch: 20 }
+	) // Wider column for Full Name
 
 	// Create workbook and append worksheet
 	const wb = XLSX.utils.book_new()

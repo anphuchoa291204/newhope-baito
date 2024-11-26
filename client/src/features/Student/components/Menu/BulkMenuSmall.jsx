@@ -1,7 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material"
 import { Divider, ListItemIcon, Menu, MenuItem } from "@mui/material"
 
-const BulkMenuSmall = ({ open, anchorEl, onClose, onEdit }) => {
+const BulkMenuSmall = ({ open, anchorEl, onClose, onEdit, handleOpenConfirm }) => {
 	return (
 		<Menu
 			anchorEl={anchorEl}
@@ -31,7 +31,7 @@ const BulkMenuSmall = ({ open, anchorEl, onClose, onEdit }) => {
 
 			<Divider sx={{ my: 0.5 }} />
 
-			<MenuItem onClick={onClose} disableRipple>
+			<MenuItem onClick={handleOpenConfirm} disableRipple>
 				<ListItemIcon>
 					<Delete fontSize="small" />
 				</ListItemIcon>

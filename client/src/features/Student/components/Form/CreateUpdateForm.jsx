@@ -93,7 +93,9 @@ const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
 							<DatePicker
 								label="Date Of Birth"
 								value={field.value || null}
-								onChange={(newValue) => field.onChange(newValue)}
+								onChange={(newValue) => {
+									field.onChange(newValue)
+								}}
 								sx={{ width: "100%" }}
 								disableFuture
 								format="DD/MM/YYYY"

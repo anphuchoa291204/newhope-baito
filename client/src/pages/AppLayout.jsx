@@ -126,7 +126,7 @@ const AppLayout = () => {
 
 	const [session, setSession] = useState({
 		user: {
-			name: "Phuc Hoa",
+			name: userData?.name,
 			email: userData?.email,
 			image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
 		},
@@ -137,7 +137,7 @@ const AppLayout = () => {
 			signIn: () => {
 				setSession({
 					user: {
-						name: "Phuc Hoa",
+						name: userData?.name,
 						email: userData?.email,
 						image: "https://mighty.tools/mockmind-api/content/cartoon/9.jpg",
 					},
@@ -156,7 +156,7 @@ const AppLayout = () => {
 				}
 			},
 		}
-	}, [logoutAuth, userData?.email])
+	}, [logoutAuth, userData?.email, userData?.name])
 
 	const FILTER_NAVIGATION = useMemo(() => {
 		return NAVIGATION.filter((item) => {

@@ -7,6 +7,7 @@ const profileSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		// ref: "User",
 		// required: [true, "User ID is required"], // NOTE: This is an optional due to import features !!!
+		default: null,
 	},
 	fullname: {
 		type: String,
@@ -41,6 +42,11 @@ const profileSchema = new Schema({
 	other_language: {
 		type: String,
 		default: "",
+	},
+	role: {
+		type: String,
+		enum: ["admin", "student"],
+		default: "student",
 	},
 })
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import bcrypt from "bcryptjs"
 
 const { Schema, models, model } = mongoose
 
@@ -11,11 +12,7 @@ const userSchema = new Schema({
 	password: {
 		type: String,
 		required: [true, "Password is required"],
-	},
-	role: {
-		type: String,
-		enum: ["admin", "student"],
-		default: "student",
+		select: false,
 	},
 	login_timestamp: {
 		type: Date,
@@ -55,6 +52,18 @@ const userSchema = new Schema({
 		default: null,
 	},
 })
+
+userSchema.pre("save", async function (next) {
+	if (!this.isModified("password")) return next()
+
+	// Hash the password
+	this.password = await bcrypt.hash(this.password, 12)
+	next()
+})
+
+userSchema.methods.passwordMatch = async function (candidatePassword, userPassword) {
+	return await bcrypt.compare(candidatePassword, userPassword)
+}
 
 const User = models.User || model("User", userSchema)
 
