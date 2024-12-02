@@ -1,0 +1,25 @@
+.custom-file-input {
+  display: flex;
+  height: 36px;
+  min-width: 300px;
+  border-radius: 0.375rem; /* Rounded corners */
+  border: 1px solid #60a5fa; /* Blue border */
+  background-color: white; /* Background color */
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.custom-file-input::-webkit-file-upload-button {
+  border: 0;
+  height: 36px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.custom-file-input::-webkit-file-upload-button:hover {
+  background-color: #1d4ed8;
+}

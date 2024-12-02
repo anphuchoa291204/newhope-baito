@@ -8,7 +8,7 @@ import { Outlet } from "react-router-dom"
 import { logout } from "@/services/authApi"
 import { useAuth } from "@/features/Auth/hooks/useAuth"
 
-import { Workspaces } from "@mui/icons-material"
+import { CallReceived, Workspaces } from "@mui/icons-material"
 import { createTheme, Typography } from "@mui/material"
 
 import { AppProvider } from "@toolpad/core/react-router-dom"
@@ -29,40 +29,20 @@ const NAVIGATION = [
 	},
 	{
 		kind: "header",
-		title: "Management",
+		title: "Student management",
 	},
-	// {
-	// 	segment: "reports",
-	// 	title: "Reports",
-	// 	icon: <BarChartIcon />,
-	// 	children: [
-	// 		{
-	// 			segment: "sales",
-	// 			title: "Sales",
-	// 			icon: <DescriptionIcon />,
-	// 		},
-	// 		{
-	// 			segment: "traffic",
-	// 			title: "Traffic",
-	// 			icon: <DescriptionIcon />,
-	// 		},
-	// 	],
-	// },
-	// {
-	// 	segment: "integrations",
-	// 	title: "Integrations",
-	// 	icon: <LayersIcon />,
-	// },
-	// {
-	// 	segment: "settings",
-	// 	title: "Settings",
-	// 	icon: <Settings />,
-	// },
 	{
 		segment: "student-list",
 		title: "Student List",
 		icon: <Workspaces />,
 		roles: ["admin"],
+		children: [
+			{
+				segment: "import-student",
+				title: "Student Import",
+				icon: <CallReceived />,
+			},
+		],
 	},
 ]
 
@@ -192,7 +172,7 @@ const AppLayout = () => {
 					},
 				}}
 			>
-				<PageContainer style={{ width: "100%", maxWidth: "100%", overflow: "auto" }}>
+				<PageContainer style={{ width: "100%", maxWidth: "100%", overflow: "auto", height: "100%" }}>
 					<Outlet />
 				</PageContainer>
 			</DashboardLayout>

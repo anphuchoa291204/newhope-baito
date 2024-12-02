@@ -26,9 +26,10 @@ const initialValues = {
 	nationality: "",
 	major: "",
 	japan_skill: "",
+	other_language: "",
 }
 
-const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
+const CreateUpdateForm = ({ createOrUpdate, studentEdit, isUpdatingStudent }) => {
 	const { register, setValue, handleSubmit, control, formState, reset } = useForm({
 		defaultValues: initialValues,
 	})
@@ -44,6 +45,7 @@ const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
 			setValue("nationality", studentEdit.nationality)
 			setValue("major", studentEdit.major)
 			setValue("japan_skill", studentEdit.japan_skill)
+			setValue("other_language", studentEdit.other_language || "N/A")
 		}
 	}, [setValue, studentEdit])
 
@@ -54,7 +56,7 @@ const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
 	return (
 		<form noValidate onSubmit={handleSubmit(onSubmit)}>
 			<Stack spacing={2}>
-				<Stack direction={"row"} spacing={2}>
+				<Stack direction="row" spacing={2}>
 					<TextField
 						slotProps={{
 							inputLabel: {
@@ -114,6 +116,15 @@ const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
 						)}
 					/>
 				</Stack>
+
+				<TextField
+					slotProps={{ inputLabel: { shrink: true } }}
+					label="Email"
+					disabled
+					value={studentEdit?.email || ""}
+					fullWidth
+					margin="normal"
+				/>
 
 				<TextField
 					slotProps={{
@@ -252,7 +263,15 @@ const CreateUpdateForm = ({ createOrUpdate, studentEdit }) => {
 					</FormHelperText>
 				</Box>
 
-				<Button type="submit" variant="contained">
+				<TextField
+					slotProps={{ inputLabel: { shrink: true } }}
+					label="Other Language"
+					{...register("other_language")}
+					fullWidth
+					margin="normal"
+				/>
+
+				<Button type="submit" disabled={isUpdatingStudent} variant="contained">
 					Save Changes
 				</Button>
 			</Stack>
