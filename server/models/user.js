@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"
+import validator from "validator"
 
 const { Schema, models, model } = mongoose
 
@@ -8,6 +9,13 @@ const userSchema = new Schema({
 		type: String,
 		unique: true,
 		required: [true, "Email is required"],
+		lowercase: true,
+		validate: {
+			validator: (value) => {
+				return validator.isEmail(value)
+			},
+			message: (props) => `${props.value} is not a valid email address`,
+		},
 	},
 	password: {
 		type: String,

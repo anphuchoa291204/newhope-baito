@@ -48,7 +48,7 @@ const login = catchAsync(async (req, res, next) => {
 	const accessToken = jwt.sign(
 		{ email, name: profile.fullname, role: profile.role },
 		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: "24h" }
+		{ expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
 	)
 
 	// Update successful login data

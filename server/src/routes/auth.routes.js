@@ -5,7 +5,7 @@ const router = express.Router()
 
 /**
  * @swagger
- * /auth/login:
+ * /api/v1/auth/login:
  *   post:
  *     tags:
  *       - "Authentication"
@@ -19,6 +19,7 @@ const router = express.Router()
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *                 description: The user's email.
  *               password:
  *                 type: string
@@ -26,62 +27,17 @@ const router = express.Router()
  *     responses:
  *       200:
  *         description: Successful login
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 message:
- *                   type: string
- *                   example: Login successful
- *                 data:
- *                   type: object
- *                   properties:
- *                     role:
- *                       type: string
- *                       example: admin
- *                     email:
- *                       type: string
- *                       example: user@example.com
- *                     accessToken:
- *                       type: string
- *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       401:
  *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: fail
- *                 message:
- *                   type: string
- *                   example: Invalid email or password
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: fail
- *                 message:
- *                   type: string
- *                   example: An error occurred while processing your request
  */
 // Login route
 router.post("/login", login)
 
 /**
  * @swagger
- * /auth/logout:
+ * /api/v1/auth/logout:
  *   post:
  *     tags:
  *       - "Authentication"
@@ -95,10 +51,87 @@ router.post("/login", login)
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *                 description: The user's email.
  *     responses:
  *       200:
  *         description: Successful logout
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+// Logout route
+router.post("/logout", logout)
+
+/**
+ * @swagger
+ * /api/v1/auth/signup:
+ *   post:
+ *     tags:
+ *       - "Authentication"
+ *     summary: Register a new user account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - userProfile
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password
+ *               userProfile:
+ *                 type: object
+ *                 required:
+ *                   - fullname
+ *                   - dateofbirth
+ *                   - gender
+ *                   - phonenumber
+ *                   - nationality
+ *                   - major
+ *                   - japanSkill
+ *                 properties:
+ *                   fullname:
+ *                     type: string
+ *                     description: User's full name
+ *                   dateofbirth:
+ *                     type: string
+ *                     format: date
+ *                     description: User's date of birth
+ *                   gender:
+ *                     type: string
+ *                     enum: [male, female]
+ *                     description: User's gender
+ *                   phonenumber:
+ *                     type: string
+ *                     format: phone
+ *                     description: User's phone number
+ *                   nationality:
+ *                     type: string
+ *                     description: User's nationality
+ *                   major:
+ *                     type: string
+ *                     description: User's major/field of study
+ *                   japanSkill:
+ *                     type: string
+ *                     enum: [N1, N2, N3, N4, N5]
+ *                     description: User's Japanese language skill level
+ *                   otherLang:
+ *                     type: string
+ *                     description: Other languages known by user
+ *     responses:
+ *       201:
+ *         description: User account created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -109,31 +142,14 @@ router.post("/login", login)
  *                   example: success
  *                 message:
  *                   type: string
- *                   example: Logout successful
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User not found
+ *                   example: User created successfully
+ *       400:
+ *         description: Bad request - missing or invalid fields
+ *       409:
+ *         description: Email already exists
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Internal server error
  */
-// Logout route
-router.post("/logout", logout)
-
 // Signup route
 router.post("/signup", signup)
 

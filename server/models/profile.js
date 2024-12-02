@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import validator from "validator"
 
 const { Schema, models, model } = mongoose
 
@@ -8,6 +9,19 @@ const profileSchema = new Schema({
 		// ref: "User",
 		// required: [true, "User ID is required"], // NOTE: This is an optional due to import features !!!
 		default: null,
+	},
+	email: {
+		type: String,
+		required: [true, "Email is required"],
+		unique: true,
+		trim: true,
+		lowercase: true,
+		validate: {
+			validator: (value) => {
+				return validator.isEmail(value)
+			},
+			message: (props) => `${props.value} is not a valid email address`,
+		},
 	},
 	fullname: {
 		type: String,

@@ -11,7 +11,7 @@ const exportToExcel = (students) => {
 		Nationality: student.nationality,
 		Major: student.major,
 		"Japanese Skill": student.japan_skill,
-		"Other Languages": student.other_language || "None",
+		"Other Languages": student.other_language || "N/A",
 	}))
 
 	// Create worksheet

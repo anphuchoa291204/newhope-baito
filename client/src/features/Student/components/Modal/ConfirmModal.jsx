@@ -13,7 +13,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />
 })
 
-const ConfirmModal = ({ open, handleClose, onDelete, student }) => {
+const ConfirmModal = ({ open, isDeletingStudent, handleClose, onDelete, student }) => {
 	return (
 		<Dialog
 			open={open}
@@ -29,8 +29,15 @@ const ConfirmModal = ({ open, handleClose, onDelete, student }) => {
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose}>Cancel</Button>
-				<Button variant="contained" color="error" onClick={() => onDelete(student._id)}>
+				<Button onClick={handleClose} disabled={isDeletingStudent}>
+					Cancel
+				</Button>
+				<Button
+					variant="contained"
+					color="error"
+					disabled={isDeletingStudent}
+					onClick={() => onDelete(student._id)}
+				>
 					Delete
 				</Button>
 			</DialogActions>

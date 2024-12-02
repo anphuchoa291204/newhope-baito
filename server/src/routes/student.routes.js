@@ -11,7 +11,7 @@ const router = express.Router()
 
 /**
  * @swagger
- * /students:
+ * /api/v1/students:
  *   get:
  *     tags:
  *       - "Students"
@@ -26,7 +26,10 @@ const router = express.Router()
  *               items:
  *                 type: object
  *                 properties:
- *                   id:
+ *                   _id:
+ *                     type: string
+ *                     example: 1234567890
+ *                   user_id:
  *                     type: string
  *                     example: 1234567890
  *                   name:
@@ -50,6 +53,12 @@ const router = express.Router()
  *                   japan_skill:
  *                     type: string
  *                     example: N2
+ *                   other_language:
+ *                     type: string
+ *                     example: French, German
+ *                   role:
+ *                     enum: [student, admin]
+ *                     example: student
  *   post:
  *     tags:
  *       - "Students"
@@ -82,73 +91,103 @@ const router = express.Router()
  *               japan_skill:
  *                 type: string
  *                 description: The student's Japanese skill level.
+ *               other_language:
+ *                 type: string
+ *                 description: Other languages known by the student.
  *     responses:
  *       201:
  *         description: Student created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Student created successfully
- *                 student:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: 1234567890
- *                     name:
- *                       type: string
- *                       example: John Doe
- *                     email:
- *                       type: string
- *                       example: johndoe@example.com
- *                     date_of_birth:
- *                       type: string
- *                       example: 2000-01-01
- *                     gender:
- *                       type: string
- *                       example: Male
- *                     nationality:
- *                       type: string
- *                       example: American
- *                     major:
- *                       type: string
- *                       example: Computer Science
- *                     japan_skill:
- *                       type: string
- *                       example: N2
  *       400:
  *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Invalid input
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: An error occurred while processing your request
  */
 
 router.route("/").get(getAllStudents).post(createStudent)
 
+/**
+ * @swagger
+ * /api/v1/students/import:
+ *   post:
+ *     tags:
+ *       - "Students"
+ *     summary: Import multiple students from Excel file
+ *     description: Import students from .xlsx or .xls file
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Excel file containing student data
+ *     responses:
+ *       201:
+ *         description: Students imported successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Students imported successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 1234567890
+ *                       user_id:
+ *                         type: string
+ *                         example: null
+ *                       fullname:
+ *                         type: string
+ *                         example: John Doe
+ *                       date_of_birth:
+ *                         type: string
+ *                         example: 2000-01-01
+ *                       gender:
+ *                         type: string
+ *                         example: male
+ *                       phone_number:
+ *                         type: string
+ *                         example: +1234567890
+ *                       nationality:
+ *                         type: string
+ *                         example: American
+ *                       major:
+ *                         type: string
+ *                         example: Computer Science
+ *                       japan_skill:
+ *                         type: string
+ *                         enum: [N1, N2, N3, N4, N5]
+ *                         example: N2
+ *                       other_language:
+ *                         type: string
+ *                         example: French, German
+ *                       role:
+ *                         type: string
+ *                         enum: [student, admin]
+ *                         example: student
+ *       400:
+ *         description: Invalid file format or data
+ *       500:
+ *         description: Internal server error
+ */
 router.route("/import").post(createImportStudent)
 
 /**
  * @swagger
- * /students/{id}:
+ * /api/v1/students/{id}:
  *   patch:
  *     tags:
  *       - "Students"
@@ -200,77 +239,31 @@ router.route("/import").post(createImportStudent)
  *     responses:
  *       200:
  *         description: Student profile updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Student profile updated successfully
- *                 profile:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: 507f1f77bcf86cd799439011
- *                     user_id:
- *                       type: string
- *                       example: 507f1f77bcf86cd799439012
- *                     fullname:
- *                       type: string
- *                       example: John Doe
- *                     date_of_birth:
- *                       type: string
- *                       example: 2000-01-01
- *                     gender:
- *                       type: string
- *                       example: male
- *                     phone_number:
- *                       type: string
- *                       example: +1234567890
- *                     nationality:
- *                       type: string
- *                       example: American
- *                     major:
- *                       type: string
- *                       example: Computer Science
- *                     japan_skill:
- *                       type: string
- *                       example: N2
- *                     other_language:
- *                       type: string
- *                       example: French
  *       400:
  *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Invalid input
  *       404:
  *         description: Profile not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Student profile not found
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: An error occurred while processing your request
+ *
+ *   delete:
+ *     tags:
+ *       - "Students"
+ *     summary: Delete a student profile by ID
+ *     parameters:
+ *       - in: uuid
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Student Profile ID
+ *     responses:
+ *       200:
+ *         description: Student profile deleted successfully
+ *       404:
+ *         description: Profile not found
+ *       500:
+ *         description: Internal server error
  */
 router.route("/:id").patch(updateStudent).delete(deleteStudent)
 

@@ -38,9 +38,9 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 // CHECKPOINT: 4. Create a new Express Router
 
 // NOTE: Auth routes
-app.use("/auth", authRouter)
+app.use("/api/v1/auth", authRouter)
 // NOTE: Student routes
-app.use("/students", authToken, studentRouter)
+app.use("/api/v1/students", authToken, studentRouter)
 
 // CHECKPOINT: 5. Handling unhandled routes
 
