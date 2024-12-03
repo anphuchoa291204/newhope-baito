@@ -4,6 +4,15 @@ export const headCells = [
 		label: "Fullname",
 	},
 	{
+		id: "email",
+		label: "Email",
+	},
+	{
+		id: "phone_number",
+		label: "Phone Number",
+		align: "center",
+	},
+	{
 		id: "date_of_birth",
 		label: "Date Of Birth",
 		align: "center",
