@@ -67,7 +67,7 @@ const customTheme = createTheme({
 				},
 			},
 		},
-		dark: {
+		/* dark: {
 			palette: {
 				TableCell: {
 					border: "#515151",
@@ -77,7 +77,8 @@ const customTheme = createTheme({
 					paper: "#112E4D",
 				},
 			},
-		},
+		}, */
+		dark: false,
 	},
 	breakpoints: {
 		values: {
@@ -172,7 +173,9 @@ const AppLayout = () => {
 					},
 				}}
 			>
-				<PageContainer style={{ width: "100%", maxWidth: "100%", overflow: "auto", height: "100%" }}>
+				<PageContainer
+					style={{ width: "100%", maxWidth: "100%", overflow: "auto", height: "100%" }}
+				>
 					<Outlet />
 				</PageContainer>
 			</DashboardLayout>
