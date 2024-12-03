@@ -26,6 +26,8 @@ const TableBodyRow = ({ student, isItemSelected, labelId, onSelect, onOpenBulkIt
 			<CustomTableCell id={labelId} sx={{ textAlign: "left" }}>
 				{student.fullname}
 			</CustomTableCell>
+			<CustomTableCell sx={{ textAlign: "left" }}>{student.email}</CustomTableCell>
+			<CustomTableCell>{student.phone_number}</CustomTableCell>
 			<CustomTableCell>{formatDate(student.date_of_birth, "dd / MM / yyyy")}</CustomTableCell>
 			<CustomTableCell>{student.gender}</CustomTableCell>
 			<CustomTableCell>{student.nationality}</CustomTableCell>
