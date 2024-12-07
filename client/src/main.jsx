@@ -10,7 +10,7 @@ import "@fontsource/roboto/500.css"
 import "@fontsource/roboto/700.css"
 
 import { Toaster } from "react-hot-toast"
-import { AuthProvider } from "./context/AuthContext.jsx"
+import { AuthProvider } from "./context/AuthContext"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 

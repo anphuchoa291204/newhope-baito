@@ -48,7 +48,7 @@ const NAVIGATION = [
 
 const BRANDING = {
 	title: "Newhope Baito",
-	logo: <img src="/assets/icon/logo.png" alt="logo" />,
+	logo: <img src="assets/icon/logo.png" alt="logo" />,
 }
 
 const customTheme = createTheme({

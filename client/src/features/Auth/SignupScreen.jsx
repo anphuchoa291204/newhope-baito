@@ -26,7 +26,7 @@ const SignupScreen = () => {
 				<div className="content">
 					<div className="content-wrapper">
 						<figure>
-							<img src="/assets/icon/logo.png" alt="logo recruiment" className="logo-image" />
+							<img src="assets/icon/logo.png" alt="logo recruiment" className="logo-image" />
 						</figure>
 
 						<h2 className="heading">Create your account</h2>
@@ -42,7 +42,7 @@ const SignupScreen = () => {
 								marginTop: "10px",
 							}}
 						>
-							<img src="/google-icon-logo.svg" alt="google icon" className="google-icon" />
+							<img src="google-icon-logo.svg" alt="google icon" className="google-icon" />
 							Sign In with Google
 						</Button>
 
@@ -67,7 +67,7 @@ const SignupScreen = () => {
 				</div>
 
 				<div className="image">
-					<img src="/assets/images/resumes-desk.jpg" alt="recruiment agency" />
+					<img src="assets/images/resumes-desk.jpg" alt="recruiment agency" />
 				</div>
 			</div>
 		</div>

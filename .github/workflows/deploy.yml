@@ -1,0 +1,63 @@
+name: Deploy Client
+
+on:
+  push:
+    branches:
+      - origin/dev
+      - dev
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18" # Specify Node.js version
+
+      # Create .env file
+      - name: Create env file
+        run: |
+          cd client
+          touch .env
+          echo "VITE_API_ENDPOINT=${{ secrets.VITE_API_ENDPOINT }}" >> .env
+
+      - name: Install dependencies
+        working-directory: ./client # Change to client directory
+        run: npm install
+
+      - name: Build project
+        working-directory: ./client # Change to client directory
+        run: npm run build
+        env:
+          VITE_API_ENDPOINT: ${{ secrets.VITE_API_ENDPOINT }} # use .env variable
+
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-files
+          path: ./client/dist # Update path to client/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/origin/dev' || github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-files
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

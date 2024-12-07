@@ -2,15 +2,21 @@ import axios from "axios"
 import { MAIN_API } from "@/constants/constants"
 import Cookies from "js-cookie"
 
-const accessToken = Cookies.get("userToken")
-
 const axiosClient = axios.create({
 	baseURL: MAIN_API,
 	headers: {
 		"Content-Type": "application/json",
 		Accept: "application/json",
-		Authorization: `Bearer ${accessToken}`,
 	},
+})
+
+// Add request interceptor
+axiosClient.interceptors.request.use((config) => {
+	const token = Cookies.get("userToken")
+	if (token) {
+		config.headers.Authorization = `Bearer ${token}`
+	}
+	return config
 })
 
 export const getAllStudents = async () => {
