@@ -2,8 +2,8 @@ import cors from "cors"
 import morgan from "morgan"
 import express from "express"
 
-import swaggerSpec from "./swagger.js"
 import swaggerUI from "swagger-ui-express"
+import swaggerSpec from "./utils/swagger.js"
 import connectToDatabase from "./utils/database.js"
 import { authToken } from "./src/middleware/authToken.js"
 
@@ -33,7 +33,19 @@ connectToDatabase()
 
 // CHECKPOINT: 3. Serve Swagger documentation
 
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec))
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui.min.css"
+
+app.use(
+	"/api-docs",
+	swaggerUI.serve,
+	swaggerUI.setup(swaggerSpec, {
+		swaggerOptions: {
+			docExpansion: "none",
+		},
+		explorer: true,
+		customCssUrl: CSS_URL,
+	})
+)
 
 // CHECKPOINT: 4. Create a new Express Router
 
