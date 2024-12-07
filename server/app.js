@@ -1,4 +1,4 @@
-import cors from "cors"
+/* import cors from "cors"
 import morgan from "morgan"
 import express from "express"
 
@@ -68,3 +68,4 @@ app.use(globalErrorHandler)
 // CHECKPOINT: 7. Export the app for running the server
 
 export default app
+ */
