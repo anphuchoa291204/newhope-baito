@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - origin/dev
-      - dev
+      - dev-24.03-feature
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/origin/dev' && 'Production-client' || 'Development-client' }}
 
     steps:
       - name: Checkout repo
@@ -33,7 +34,7 @@ jobs:
 
       - name: Build project
         working-directory: ./client # Change to client directory
-        run: npm run build
+        run: npm run ${{ github.ref == 'refs/heads/origin/dev' && 'build' || 'build:dev' }}
         env:
           VITE_API_ENDPOINT: ${{ secrets.VITE_API_ENDPOINT }} # use .env variable
 
@@ -47,7 +48,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/origin/dev' || github.ref == 'refs/heads/dev'
+    environment: ${{ github.ref == 'refs/heads/origin/dev' && 'Production-client' || 'Development-client' }}
 
     steps:
       - name: Download artifact
@@ -61,3 +62,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          destination_dir: ${{ github.ref == 'refs/heads/origin/dev' && 'production' || 'development' }}
